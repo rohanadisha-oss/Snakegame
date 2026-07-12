@@ -187,6 +187,47 @@
         let snake, dx, dy, score, currentTargetIndex, activeTargets, gameInterval;
         let gameActive = false;
 
+        // সাপের হিস হিস (Hiss) আওয়াজ তৈরি করার জন্য ফাংশন
+        function playHissSound() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const audioCtx = new AudioContext();
+                
+                // ০.২৫ সেকেন্ডের একটি হোয়াইট নয়েজ বাফার তৈরি করা
+                const bufferSize = audioCtx.sampleRate * 0.25;
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                
+                // র্যান্ডম ফ্রিকোয়েন্সি দিয়ে নয়েজ জেনারেট করা
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+                
+                const noise = audioCtx.createBufferSource();
+                noise.buffer = buffer;
+                
+                // হাই-পাস ফিল্টার যোগ করা যাতে শুধু চিকন/উঁচু হিস শব্দটা পাওয়া যায়
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'highpass';
+                filter.frequency.setValueAtTime(3500, audioCtx.currentTime); 
+                
+                // শব্দের ভলিউম এবং ফেড-আউট ইফেক্ট নিয়ন্ত্রণ
+                const gainNode = audioCtx.createGain();
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                
+                // কানেকশন
+                noise.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                noise.start();
+            } catch (e) {
+                console.log("Audio Error:", e);
+            }
+        }
+
         function resizeGame() {
             const container = document.getElementById('game-container');
             const availW = container.clientWidth - 10;
@@ -300,6 +341,9 @@
                 if (head.x === target.pos.x && head.y === target.pos.y) {
                     ateSomething = true;
                     
+                    // সাপ কিছু খেলেই হিস হিস শব্দ প্লে হবে
+                    playHissSound();
+                    
                     if (target.isCorrect) {
                         score += 10;
                         scoreEl.innerText = `স্কোর: ${score}`;
@@ -373,7 +417,15 @@
         function changeDirection(newDx, newDy) {
             if (!gameActive) return;
             if (newDx !== 0 && dx === 0) { dx = newDx; dy = 0; }
-            if (newDy !== 0 && dy === 0) { dy = newDy; dx = 0; }
+            if (newDy !== 0 && dy === 0) { fireDirection(newDx, newDy); }
+            if (newDy !== 0 && dy === 0) { dx = 0; dy = newDy; }
+        }
+
+        // কন্ট্রোল বাইন্ডিং ফিক্সড
+        function changeDirection(newDx, newDy) {
+            if (!gameActive) return;
+            if (newDx !== 0 && dx === 0) { dx = newDx; dy = 0; }
+            if (newDy !== 0 && dy === 0) { dx = 0; dy = newDy; }
         }
 
         const bindControl = (id, newDx, newDy) => {
