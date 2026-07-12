@@ -23,7 +23,7 @@
             position: relative;
         }
 
-        /* হেডার এরিয়া - রেসপন্সিভ সাইজ */
+        /* হেডার এরিয়া */
         header {
             height: 7vh;
             width: 100%;
@@ -48,7 +48,7 @@
             font-weight: bold;
         }
 
-        /* প্লে এরিয়া - চারদিকে ১০ পিক্সেল মার্জিন দিয়ে সেফ জোন করা হয়েছে */
+        /* প্লে এরিয়া */
         #game-container {
             flex: 1;
             display: flex;
@@ -64,7 +64,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
 
-        /* ফিক্সড কন্ট্রোল প্যানেল - উচ্চতা ২০% এ নামিয়ে আনা হয়েছে */
+        /* কন্ট্রোল প্যানেল */
         #controls {
             height: 20vh; 
             display: flex;
@@ -74,7 +74,6 @@
             padding-bottom: 12px;
         }
 
-        /* ডি-প্যাড সাইজ আরও কমিয়ে ১২৫px করা হয়েছে যাতে কোনো ফোনে উপচে না পড়ে */
         .d-pad {
             position: relative;
             width: 125px;
@@ -101,7 +100,6 @@
             background-color: rgb(55, 110, 200);
         }
 
-        /* স্ক্রিন সাইজ কমায় বাটনের পজিশন নিখুঁত অ্যাডজাস্টমেন্ট */
         #btn-up    { top: 0; left: 42px; width: 41px; height: 39px; }
         #btn-down  { bottom: 0; left: 42px; width: 41px; height: 39px; }
         #btn-left  { top: 42px; left: 0; width: 39px; height: 41px; }
@@ -164,7 +162,6 @@
         const COLS = 16;
         let GRID_SIZE, ROWS, width, height;
 
-        // আপনার দেওয়া ২ডি অ্যারে ডেটাবেস
         const ALL_SEQUENCES =  [
             ["কা", "কি", "কী", "কু", "কূ", "কৃ", "কে", "কৈ", "কো", "কৌ"],
             ["খা", "খি", "খী", "খু", "খূ", "খৃ", "খে", "খৈ", "খো", "খৌ"],
@@ -177,29 +174,25 @@
             ["দা", "দি", "দী", "দু", "দূ", "দৃ", "দে", "দৈ", "দো", "দৌ"],
             ["পা", "পি", "পী", "পু", "পূ", "পৃ", "পে", "পৈ", "পো", "পৌ"],
             ["বা", "বি", "বী", "বু", "বূ", "বৃ", "বে", "বৈ", "বো", "বৌ"],
-            ["মা", "মি", "মী", "মু", "মূ", "মৃ", "মে", "মৈ", "মো", "মৌ"],
+            ["মা", "মি", "মী", "মু", "মূ", "มৃ", "মে", "মৈ", "মো", "মৌ"],
             ["সা", "সি", "সী", "সু", "সূ", "সৃ", "সে", "সৈ", "সো", "সৌ"]
         ];
 
-        // .flat() ব্যবহার করে সবগুলো সেটকে একটি লম্বা সোজা ১ডি লাইনে রূপান্তর করা হলো (কা থেকে সৌ পর্যন্ত সিরিয়ালি চলবে)
         const SEQUENCE = ALL_SEQUENCES.flat();
 
         let snake, dx, dy, score, currentTargetIndex, activeTargets, gameInterval;
         let gameActive = false;
 
-        // সাপের হিস হিস (Hiss) আওয়াজ তৈরি করার জন্য ফাংশন
         function playHissSound() {
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 if (!AudioContext) return;
                 const audioCtx = new AudioContext();
                 
-                // ০.২৫ সেকেন্ডের একটি হোয়াইট নয়েজ বাফার তৈরি করা
                 const bufferSize = audioCtx.sampleRate * 0.25;
                 const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
                 const data = buffer.getChannelData(0);
                 
-                // র্যান্ডম ফ্রিকোয়েন্সি দিয়ে নয়েজ জেনারেট করা
                 for (let i = 0; i < bufferSize; i++) {
                     data[i] = Math.random() * 2 - 1;
                 }
@@ -207,17 +200,14 @@
                 const noise = audioCtx.createBufferSource();
                 noise.buffer = buffer;
                 
-                // হাই-পাস ফিল্টার যোগ করা যাতে শুধু চিকন/উঁচু হিস শব্দটা পাওয়া যায়
                 const filter = audioCtx.createBiquadFilter();
                 filter.type = 'highpass';
                 filter.frequency.setValueAtTime(3500, audioCtx.currentTime); 
                 
-                // শব্দের ভলিউম এবং ফেড-আউট ইফেক্ট নিয়ন্ত্রণ
                 const gainNode = audioCtx.createGain();
                 gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
                 
-                // কানেকশন
                 noise.connect(filter);
                 filter.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
@@ -282,15 +272,12 @@
             activeTargets = [];
             const correctLetter = SEQUENCE[currentTargetIndex];
             
-            // বোর্ডে ১টি সঠিক উত্তর প্লেস করা হলো
             activeTargets.push({
                 letter: correctLetter,
                 pos: getRandomPos(),
                 isCorrect: true
             });
 
-            // রুল ফিক্স (এক অক্ষর যেন দুবার না আসে): 
-            // ভুল অক্ষরের পুলে শুধুমাত্র সেই অক্ষরগুলো থাকবে যা এই মুহূর্তে সঠিক উত্তরের সমান নয়।
             const wrongPool = SEQUENCE.filter(l => l !== correctLetter);
             let usedLetters = new Set([correctLetter]);
 
@@ -340,8 +327,6 @@
                 const target = activeTargets[i];
                 if (head.x === target.pos.x && head.y === target.pos.y) {
                     ateSomething = true;
-                    
-                    // সাপ কিছু খেলেই হিস হিস শব্দ প্লে হবে
                     playHissSound();
                     
                     if (target.isCorrect) {
@@ -384,7 +369,7 @@
             ctx.clearRect(0, 0, width, height);
             drawStaticBG();
 
-            // বড় বাংলা বর্ণ রেন্ডার
+            // ফল/বর্ণ রেন্ডার
             activeTargets.forEach(target => {
                 ctx.fillStyle = 'rgb(255, 112, 67)';
                 ctx.font = `bold ${GRID_SIZE * 0.95}px 'Noto Sans', 'Arial', sans-serif`;
@@ -397,31 +382,57 @@
                 );
             });
 
-            // সাপ ড্র করা
+            // রিয়ালিস্টিক সাপ ড্র করা
             snake.forEach((part, index) => {
-                ctx.fillStyle = index === 0 ? 'rgb(0, 230, 118)' : 'rgb(105, 240, 174)';
+                const centerX = part.x * GRID_SIZE + GRID_SIZE / 2;
+                const centerY = part.y * GRID_SIZE + GRID_SIZE / 2;
                 
-                const padding = 2;
-                const r = 5; 
-                const x = part.x * GRID_SIZE + padding;
-                const y = part.y * GRID_SIZE + padding;
-                const w = GRID_SIZE - padding * 2;
-                const h = GRID_SIZE - padding * 2;
+                // লেজের দিকে ধীরে ধীরে সাইজ ছোট (Tapered body structure)
+                const taperFactor = Math.max(0.4, 1 - (index / Math.max(20, snake.length)));
+                const size = (GRID_SIZE - 2) * taperFactor;
+                const radius = size / 2;
 
                 ctx.beginPath();
-                ctx.roundRect(x, y, w, h, r);
-                ctx.fill();
+                
+                if (index === 0) {
+                    // হেড গ্রাফিক্স (উজ্জ্বল সবুজ গ্রাডিয়েন্ট)
+                    let grad = ctx.createRadialGradient(centerX, centerY, 2, centerX, centerY, radius);
+                    grad.addColorStop(0, 'rgb(76, 175, 80)');
+                    grad.addColorStop(1, 'rgb(27, 94, 32)');
+                    ctx.fillStyle = grad;
+                    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // সাপের চোখ জেনারেট করা (গতির দিকের উপর ভিত্তি করে চোখের অবস্থান)
+                    ctx.fillStyle = 'rgb(255, 235, 59)'; // হলুদ চোখ
+                    const eyeOffset = radius * 0.4;
+                    const eyeSize = radius * 0.2;
+
+                    if (dx === 1) { // ডানদিকে যাচ্ছে
+                        ctx.beginPath(); ctx.arc(centerX + eyeOffset, centerY - eyeOffset, eyeSize, 0, Math.PI * 2); ctx.fill();
+                        ctx.beginPath(); ctx.arc(centerX + eyeOffset, centerY + eyeOffset, eyeSize, 0, Math.PI * 2); ctx.fill();
+                    } else if (dx === -1) { // বামদিকে যাচ্ছে
+                        ctx.beginPath(); ctx.arc(centerX - eyeOffset, centerY - eyeOffset, eyeSize, 0, Math.PI * 2); ctx.fill();
+                        ctx.beginPath(); ctx.arc(centerX - eyeOffset, centerY + eyeOffset, eyeSize, 0, Math.PI * 2); ctx.fill();
+                    } else if (dy === 1) { // নিচের দিকে যাচ্ছে
+                        ctx.beginPath(); ctx.arc(centerX - eyeOffset, centerY + eyeOffset, eyeSize, 0, Math.PI * 2); ctx.fill();
+                        ctx.beginPath(); ctx.arc(centerX + eyeOffset, centerY + eyeOffset, eyeSize, 0, Math.PI * 2); ctx.fill();
+                    } else if (dy === -1) { // উপরের দিকে যাচ্ছে
+                        ctx.beginPath(); ctx.arc(centerX - eyeOffset, centerY - eyeOffset, eyeSize, 0, Math.PI * 2); ctx.fill();
+                        ctx.beginPath(); ctx.arc(centerX + eyeOffset, centerY - eyeOffset, eyeSize, 0, Math.PI * 2); ctx.fill();
+                    }
+                } else {
+                    // বডি গ্রাফিক্স (হালকা শেড দিয়ে গোল আকৃতির আইল)
+                    let grad = ctx.createRadialGradient(centerX, centerY, 1, centerX, centerY, radius);
+                    grad.addColorStop(0, 'rgb(129, 199, 132)');
+                    grad.addColorStop(1, 'rgb(46, 125, 50)');
+                    ctx.fillStyle = grad;
+                    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
             });
         }
 
-        function changeDirection(newDx, newDy) {
-            if (!gameActive) return;
-            if (newDx !== 0 && dx === 0) { dx = newDx; dy = 0; }
-            if (newDy !== 0 && dy === 0) { fireDirection(newDx, newDy); }
-            if (newDy !== 0 && dy === 0) { dx = 0; dy = newDy; }
-        }
-
-        // কন্ট্রোল বাইন্ডিং ফিক্সড
         function changeDirection(newDx, newDy) {
             if (!gameActive) return;
             if (newDx !== 0 && dx === 0) { dx = newDx; dy = 0; }
