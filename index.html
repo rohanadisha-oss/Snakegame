@@ -164,14 +164,31 @@
         const COLS = 16;
         let GRID_SIZE, ROWS, width, height;
 
-        const SEQUENCE = ["ক", "খ", "গ", "ঘ", "চ", "জ", "ট", "ত", "দ", "প", "ব", "ম", "স"];
+        // আপনার দেওয়া ২ডি অ্যারে ডেটাবেস
+        const ALL_SEQUENCES =  [
+            ["কা", "কি", "কী", "কু", "কূ", "কৃ", "কে", "কৈ", "কো", "কৌ"],
+            ["খা", "খি", "খী", "খু", "খূ", "খৃ", "খে", "খৈ", "খো", "খৌ"],
+            ["গা", "গি", "গী", "গু", "গূ", "গৃ", "গে", "গৈ", "গো", "গৌ"],
+            ["ঘা", "ঘি", "ঘী", "ঘু", "ঘূ", "ঘৃ", "ঘে", "ঘৈ", "ঘো", "ঘৌ"],
+            ["চা", "চি", "চী", "চু", "চূ", "চৃ", "চে", "চৈ", "চো", "চৌ"],
+            ["জা", "জি", "জী", "জু", "জূ", "জৃ", "জে", "জৈ", "জো", "জৌ"],
+            ["টা", "টি", "টী", "টু", "টূ", "টৃ", "টে", "টৈ", "টো", "টৌ"],
+            ["তা", "তি", "তী", "তু", "তূ", "তৃ", "তে", "তৈ", "তো", "তৌ"],
+            ["দা", "দি", "দী", "দু", "দূ", "দৃ", "দে", "দৈ", "দো", "দৌ"],
+            ["পা", "পি", "পী", "পু", "পূ", "পৃ", "পে", "পৈ", "পো", "পৌ"],
+            ["বা", "বি", "বী", "বু", "বূ", "বৃ", "বে", "বৈ", "বো", "বৌ"],
+            ["মা", "মি", "মী", "মু", "মূ", "มৃ", "মে", "মৈ", "মো", "মৌ"],
+            ["সা", "সি", "সী", "সু", "সূ", "সৃ", "সে", "সৈ", "সো", "সৌ"]
+        ];
+
+        // .flat() ব্যবহার করে সবগুলো সেটকে একটি লম্বা সোজা ১ডি লাইনে রূপান্তর করা হলো (কা থেকে সৌ পর্যন্ত সিরিয়ালি চলবে)
+        const SEQUENCE = ALL_SEQUENCES.flat();
 
         let snake, dx, dy, score, currentTargetIndex, activeTargets, gameInterval;
         let gameActive = false;
 
         function resizeGame() {
             const container = document.getElementById('game-container');
-            // কন্টেইনারের সীমানার থেকে ১০ পিক্সেল সেফ মার্জিন রাখা
             const availW = container.clientWidth - 10;
             const availH = container.clientHeight - 10;
 
@@ -224,12 +241,15 @@
             activeTargets = [];
             const correctLetter = SEQUENCE[currentTargetIndex];
             
+            // বোর্ডে ১টি সঠিক উত্তর প্লেস করা হলো
             activeTargets.push({
                 letter: correctLetter,
                 pos: getRandomPos(),
                 isCorrect: true
             });
 
+            // রুল ফিক্স (এক অক্ষর যেন দুবার না আসে): 
+            // ভুল অক্ষরের পুলে শুধুমাত্র সেই অক্ষরগুলো থাকবে যা এই মুহূর্তে সঠিক উত্তরের সমান নয়।
             const wrongPool = SEQUENCE.filter(l => l !== correctLetter);
             let usedLetters = new Set([correctLetter]);
 
@@ -286,7 +306,7 @@
                         currentTargetIndex++;
                         
                         if (currentTargetIndex >= SEQUENCE.length) {
-                            endGame("🎉 অসাধারণ! ক থেকে স পর্যন্ত সব বর্ণ শেষ হয়েছে!");
+                            endGame("🎉 অসাধারণ! সব সেটের সমস্ত বর্ণ সঠিকভাবে শেষ হয়েছে!");
                         } else {
                             updateTargetUI();
                             generateTargets();
