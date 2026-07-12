@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>কালারফুল বাংলা স্নেক গেম</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background-color: rgb(30, 34, 42);
+            font-family: 'Noto Sans', 'Arial', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* হেডার এরিয়া - রেসপন্সিভ সাইজ */
+        header {
+            height: 7vh;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+        }
+
+        #score {
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        #target-box {
+            background-color: rgb(255, 213, 79);
+            color: rgb(40, 44, 52);
+            padding: 5px 15px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        /* প্লে এরিয়া - চারদিকে ১০ পিক্সেল মার্জিন দিয়ে সেফ জোন করা হয়েছে */
+        #game-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        canvas {
+            background-color: rgb(40, 44, 52);
+            border: 4px solid rgb(97, 175, 239);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+
+        /* ফিক্সড কন্ট্রোল প্যানেল - উচ্চতা ২০% এ নামিয়ে আনা হয়েছে */
+        #controls {
+            height: 20vh; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding-bottom: 12px;
+        }
+
+        /* ডি-প্যাড সাইজ আরও কমিয়ে ১২৫px করা হয়েছে যাতে কোনো ফোনে উপচে না পড়ে */
+        .d-pad {
+            position: relative;
+            width: 125px;
+            height: 125px;
+        }
+
+        .btn {
+            position: absolute;
+            background-color: rgb(75, 140, 235);
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.25);
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .btn:active {
+            background-color: rgb(55, 110, 200);
+        }
+
+        /* স্ক্রিন সাইজ কমায় বাটনের পজিশন নিখুঁত অ্যাডজাস্টমেন্ট */
+        #btn-up    { top: 0; left: 42px; width: 41px; height: 39px; }
+        #btn-down  { bottom: 0; left: 42px; width: 41px; height: 39px; }
+        #btn-left  { top: 42px; left: 0; width: 39px; height: 41px; }
+        #btn-right { top: 42px; right: 0; width: 39px; height: 41px; }
+
+        /* গেম ওভার ওভারলে */
+        #overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            z-index: 10;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #overlay h1 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div id="score">স্কোর: 0</div>
+        <div id="target-box">খোঁজো: -</div>
+    </header>
+
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <div id="controls">
+        <div class="d-pad">
+            <button class="btn" id="btn-up">↑</button>
+            <button class="btn" id="btn-left">←</button>
+            <button class="btn" id="btn-right">→</button>
+            <button class="btn" id="btn-down">↓</button>
+        </div>
+    </div>
+
+    <div id="overlay" onclick="resetGame()">
+        <h1 id="overlay-msg">💥 গেম ওভার!</h1>
+        <p style="color: #aaa; font-size: 0.85rem;">আবার খেলতে স্ক্রিনে ট্যাপ করুন।</p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
+        const targetBoxEl = document.getElementById('target-box');
+        const overlay = document.getElementById('overlay');
+        const overlayMsg = document.getElementById('overlay-msg');
+
+        const COLS = 16;
+        let GRID_SIZE, ROWS, width, height;
+
+        const SEQUENCE = ["ক", "খ", "গ", "ঘ", "চ", "জ", "ট", "ত", "দ", "প", "ব", "ম", "স"];
+
+        let snake, dx, dy, score, currentTargetIndex, activeTargets, gameInterval;
+        let gameActive = false;
+
+        function resizeGame() {
+            const container = document.getElementById('game-container');
+            // কন্টেইনারের সীমানার থেকে ১০ পিক্সেল সেফ মার্জিন রাখা
+            const availW = container.clientWidth - 10;
+            const availH = container.clientHeight - 10;
+
+            GRID_SIZE = Math.floor(availW / COLS);
+            ROWS = Math.floor(availH / GRID_SIZE);
+
+            width = COLS * GRID_SIZE;
+            height = ROWS * GRID_SIZE;
+
+            canvas.width = width;
+            canvas.height = height;
+
+            if(!gameActive) drawStaticBG();
+        }
+
+        function drawStaticBG() {
+            ctx.fillStyle = 'rgb(40, 44, 52)';
+            ctx.fillRect(0, 0, width, height);
+        }
+
+        function initGame() {
+            snake = [{x: Math.floor(COLS/2), y: Math.floor(ROWS/2)}];
+            dx = 1; dy = 0;
+            score = 0;
+            currentTargetIndex = 0;
+            activeTargets = [];
+            
+            scoreEl.innerText = `স্কোর: ${score}`;
+            updateTargetUI();
+            generateTargets();
+            
+            overlay.style.display = 'none';
+            gameActive = true;
+
+            if(gameInterval) clearInterval(gameInterval);
+            gameInterval = setInterval(gameLoop, 220); 
+        }
+
+        function updateTargetUI() {
+            if (currentTargetIndex < SEQUENCE.length) {
+                targetBoxEl.innerText = `খোঁজো: ${SEQUENCE[currentTargetIndex]}`;
+            } else {
+                targetBoxEl.innerText = "শেষ!";
+            }
+        }
+
+        function generateTargets() {
+            if (currentTargetIndex >= SEQUENCE.length) return;
+            
+            activeTargets = [];
+            const correctLetter = SEQUENCE[currentTargetIndex];
+            
+            activeTargets.push({
+                letter: correctLetter,
+                pos: getRandomPos(),
+                isCorrect: true
+            });
+
+            const wrongPool = SEQUENCE.filter(l => l !== correctLetter);
+            let usedLetters = new Set([correctLetter]);
+
+            for (let i = 0; i < 2; i++) {
+                let availablePool = wrongPool.filter(l => !usedLetters.has(l));
+                if (availablePool.length === 0) break; 
+
+                const dummy = availablePool[Math.floor(Math.random() * availablePool.length)];
+                usedLetters.add(dummy); 
+
+                let wPos = getRandomPos();
+                while (activeTargets.some(t => t.pos.x === wPos.x && t.pos.y === wPos.y)) {
+                    wPos = getRandomPos();
+                }
+                
+                activeTargets.push({ letter: dummy, pos: wPos, isCorrect: false });
+            }
+        }
+
+        function getRandomPos() {
+            while (true) {
+                const pos = {
+                    x: Math.floor(Math.random() * COLS),
+                    y: Math.floor(Math.random() * ROWS)
+                };
+                if (!snake.some(p => p.x === pos.x && p.y === pos.y)) {
+                    return pos;
+                }
+            }
+        }
+
+        function gameLoop() {
+            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+
+            head.x = (head.x + COLS) % COLS;
+            head.y = (head.y + ROWS) % ROWS;
+
+            if (snake.some(part => part.x === head.x && part.y === head.y)) {
+                endGame("💥 গেম ওভার! নিজের শরীরে ধাক্কা লেগেছে।");
+                return;
+            }
+
+            snake.unshift(head);
+
+            let ateSomething = false;
+            for (let i = 0; i < activeTargets.length; i++) {
+                const target = activeTargets[i];
+                if (head.x === target.pos.x && head.y === target.pos.y) {
+                    ateSomething = true;
+                    
+                    if (target.isCorrect) {
+                        score += 10;
+                        scoreEl.innerText = `স্কোর: ${score}`;
+                        currentTargetIndex++;
+                        
+                        if (currentTargetIndex >= SEQUENCE.length) {
+                            endGame("🎉 অসাধারণ! ক থেকে স পর্যন্ত সব বর্ণ শেষ হয়েছে!");
+                        } else {
+                            updateTargetUI();
+                            generateTargets();
+                        }
+                    } else {
+                        endGame(`❌ ভুল বর্ণ! আপনাকে '${SEQUENCE[currentTargetIndex]}' খেতে হতো।`);
+                    }
+                    break;
+                }
+            }
+
+            if (!ateSomething) {
+                snake.pop();
+            }
+
+            draw();
+        }
+
+        function endGame(msg) {
+            clearInterval(gameInterval);
+            gameActive = false;
+            overlayMsg.innerText = msg;
+            overlay.style.display = 'flex';
+        }
+
+        function resetGame() {
+            if (!gameActive) initGame();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            drawStaticBG();
+
+            // বড় বাংলা বর্ণ রেন্ডার
+            activeTargets.forEach(target => {
+                ctx.fillStyle = 'rgb(255, 112, 67)';
+                ctx.font = `bold ${GRID_SIZE * 0.95}px 'Noto Sans', 'Arial', sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(
+                    target.letter, 
+                    target.pos.x * GRID_SIZE + GRID_SIZE / 2, 
+                    target.pos.y * GRID_SIZE + GRID_SIZE / 2
+                );
+            });
+
+            // সাপ ড্র করা
+            snake.forEach((part, index) => {
+                ctx.fillStyle = index === 0 ? 'rgb(0, 230, 118)' : 'rgb(105, 240, 174)';
+                
+                const padding = 2;
+                const r = 5; 
+                const x = part.x * GRID_SIZE + padding;
+                const y = part.y * GRID_SIZE + padding;
+                const w = GRID_SIZE - padding * 2;
+                const h = GRID_SIZE - padding * 2;
+
+                ctx.beginPath();
+                ctx.roundRect(x, y, w, h, r);
+                ctx.fill();
+            });
+        }
+
+        function changeDirection(newDx, newDy) {
+            if (!gameActive) return;
+            if (newDx !== 0 && dx === 0) { dx = newDx; dy = 0; }
+            if (newDy !== 0 && dy === 0) { dy = newDy; dx = 0; }
+        }
+
+        const bindControl = (id, newDx, newDy) => {
+            const btn = document.getElementById(id);
+            btn.addEventListener('touchstart', (e) => { e.preventDefault(); changeDirection(newDx, newDy); });
+            btn.addEventListener('mousedown', () => changeDirection(newDx, newDy));
+        };
+
+        bindControl('btn-up', 0, -1);
+        bindControl('btn-down', 0, 1);
+        bindControl('btn-left', -1, 0);
+        bindControl('btn-right', 1, 0);
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp') changeDirection(0, -1);
+            if (e.key === 'ArrowDown') changeDirection(0, 1);
+            if (e.key === 'ArrowLeft') changeDirection(-1, 0);
+            if (e.key === 'ArrowRight') changeDirection(1, 0);
+        });
+
+        window.addEventListener('resize', resizeGame);
+        window.addEventListener('orientationchange', () => setTimeout(resizeGame, 200));
+
+        resizeGame();
+        initGame();
+    </script>
+</body>
+</html>
