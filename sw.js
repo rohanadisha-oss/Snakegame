@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pres-board-cache-v1';
+const CACHE_NAME = 'kids-pres-studio-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -7,9 +7,7 @@ const ASSETS_TO_CACHE = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
   );
   self.skipWaiting();
 });
