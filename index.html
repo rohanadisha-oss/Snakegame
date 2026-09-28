@@ -1,467 +1,2056 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>কালারফুল বাংলা স্নেক গেম</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            -webkit-user-select: none;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Smart Presentation Board</title>
+  
+  <!-- PWA Manifest & Meta Links -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#8b5cf6">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3247/3247414.png">
 
-        body {
-            background-color: rgb(30, 34, 42);
-            font-family: 'Noto Sans', 'Arial', sans-serif;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-        }
+  <!-- Google Fonts: Bengali Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atma:wght@500;600;700&family=Galada&family=Hind+Siliguri:wght@400;600;700&family=Mina:wght@400;700&family=Noto+Sans+Bengali:wght@400;600;700&family=Tiro+Bangla&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #8b5cf6;
+      --accent: #06b6d4;
+      --bg-dark: #070314;
+      --panel-bg: #110926;
+      --panel-border: #2d1854;
+      --neon-purple: #c084fc;
+      --neon-cyan: #22d3ee;
+      --neon-gold: #facc15;
+    }
 
-        /* হেডার এরিয়া */
-        header {
-            height: 7vh;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 25px;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
 
-        #score {
-            color: #ffffff;
-            font-size: 1.1rem;
-            font-weight: bold;
-        }
+    html, body {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      font-family: 'Hind Siliguri', sans-serif;
+      background: var(--bg-dark);
+      color: #fff;
+      position: fixed;
+    }
 
-        #target-box {
-            background-color: rgb(255, 213, 79);
-            color: rgb(40, 44, 52);
-            padding: 5px 15px;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: bold;
-        }
+    #app-container {
+      width: 100%;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
 
-        /* প্লে এরিয়া */
-        #game-container {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-        }
+    /* 1. Top Bar */
+    #top-bar {
+      flex: 0 0 46px;
+      height: 46px;
+      background: var(--panel-bg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 8px;
+      border-bottom: 1px solid var(--panel-border);
+      z-index: 50;
+      box-shadow: 0 2px 12px rgba(139, 92, 246, 0.2);
+    }
 
-        canvas {
-            background-color: rgb(40, 44, 52);
-            border: 4px solid rgb(97, 175, 239);
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-        }
+    .app-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--neon-cyan);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      text-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+      white-space: nowrap;
+    }
 
-        /* কন্ট্রোল প্যানেল */
-        #controls {
-            height: 20vh; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            padding-bottom: 12px;
-        }
+    .top-actions { display: flex; gap: 5px; }
 
-        .d-pad {
-            position: relative;
-            width: 125px;
-            height: 125px;
-        }
+    .btn-sm {
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .btn-theme { background: #581c87; color: #f3e8ff; border: 1px solid #a855f7; }
+    .btn-save { background: #059669; color: #fff; }
+    .btn-install { background: #0284c7; color: #fff; display: none; }
+    .btn-play-preview { background: #facc15; color: #000; font-weight: 700; }
+    .btn-clear { background: #dc2626; color: #fff; }
 
-        .btn {
-            position: absolute;
-            background-color: rgb(75, 140, 235);
-            color: #ffffff;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.4rem;
-            font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 3px 5px rgba(0,0,0,0.25);
-            cursor: pointer;
-            transition: background 0.1s;
-        }
+    /* 2. Slide Navigation Strip */
+    #slide-strip {
+      flex: 0 0 44px;
+      background: #09031a;
+      border-bottom: 1px solid var(--panel-border);
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      z-index: 45;
+    }
+    #slide-strip::-webkit-scrollbar { display: none; }
 
-        .btn:active {
-            background-color: rgb(55, 110, 200);
-        }
+    .slide-chip {
+      padding: 5px 12px;
+      background: #190e38;
+      border: 1px solid #4c1d95;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #c4b5fd;
+    }
+    .slide-chip.active {
+      background: #7c3aed;
+      color: #fff;
+      border-color: #c084fc;
+      box-shadow: 0 0 10px rgba(192, 132, 252, 0.5);
+    }
 
-        #btn-up    { top: 0; left: 42px; width: 41px; height: 39px; }
-        #btn-down  { bottom: 0; left: 42px; width: 41px; height: 39px; }
-        #btn-left  { top: 42px; left: 0; width: 39px; height: 41px; }
-        #btn-right { top: 42px; right: 0; width: 39px; height: 41px; }
+    .btn-add-slide {
+      background: #059669;
+      color: #fff;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
 
-        /* গেম ওভার ওভারলে */
-        #overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            z-index: 10;
-            text-align: center;
-            padding: 20px;
-        }
+    /* 3. Canvas Viewport */
+    #canvas-viewport {
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: #060112;
+      overflow: hidden;
+      touch-action: none;
+    }
 
-        #overlay h1 {
-            font-size: 1.3rem;
-            margin-bottom: 12px;
-        }
-    </style>
+    /* 16:9 Virtual Board */
+    #virtual-board {
+      width: 1920px;
+      height: 1080px;
+      position: absolute;
+      transform-origin: center center;
+      border-radius: 14px;
+      overflow: hidden;
+      transition: opacity 0.45s ease-in-out;
+      opacity: 1;
+    }
+
+    #virtual-board.theme-white {
+      background: #ffffff !important;
+      color: #0f172a;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    }
+
+    #virtual-board.theme-neon-purple {
+      background: radial-gradient(circle at center, #1e0b3d 0%, #0c021f 65%, #05000e 100%) !important;
+      border: 4px solid #a855f7;
+      box-shadow: 0 0 50px rgba(168, 85, 247, 0.5), inset 0 0 60px rgba(34, 211, 238, 0.25) !important;
+      color: #ffffff;
+    }
+
+    #virtual-board.theme-chalkboard {
+      background: #1e3a2f !important;
+      background-image: radial-gradient(circle, #2d5a49 10%, #173227 90%) !important;
+      color: #f1f5f9;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    }
+
+    /* Board Items (Fully scalable with Pinch) */
+    .board-item {
+      position: absolute;
+      touch-action: none;
+      transform-origin: center center;
+      display: inline-block;
+      cursor: grab;
+    }
+
+    .board-item.selected {
+      outline: 4px dashed #38bdf8;
+      outline-offset: 4px;
+      z-index: 999 !important;
+    }
+
+    .resize-handle {
+      position: absolute;
+      width: 48px;
+      height: 48px;
+      background: #38bdf8;
+      border: 3px solid #fff;
+      border-radius: 50%;
+      bottom: -22px;
+      right: -22px;
+      cursor: nwse-resize;
+      display: none;
+      z-index: 1001;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+    .board-item.selected .resize-handle {
+      display: block;
+    }
+
+    .step-badge {
+      position: absolute;
+      top: -24px;
+      left: -24px;
+      background: #ec4899;
+      color: white;
+      font-size: 22px;
+      font-weight: bold;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(236, 72, 153, 0.8);
+      border: 3px solid #fff;
+      pointer-events: none;
+      z-index: 1002;
+    }
+
+    .item-text {
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.35;
+      padding: 10px 18px;
+      border-radius: 14px;
+      display: inline-block;
+      text-decoration-thickness: 4px;
+      text-underline-offset: 6px;
+    }
+
+    .item-image {
+      display: block;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 12px;
+    }
+
+    .flow-node {
+      border-radius: 18px;
+      padding: 16px 28px;
+      text-align: center;
+      font-weight: 700;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      border: 4px solid;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(18, 8, 38, 0.92);
+      backdrop-filter: blur(8px);
+    }
+    .flow-node.root {
+      border-color: #38bdf8;
+      color: #38bdf8;
+      font-size: 46px;
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.4);
+    }
+    .flow-node.branch {
+      border-color: #facc15;
+      color: #facc15;
+      font-size: 38px;
+      box-shadow: 0 0 20px rgba(250, 204, 21, 0.35);
+    }
+    .flow-node.subbranch {
+      border-color: #ec4899;
+      color: #f472b6;
+      font-size: 32px;
+      box-shadow: 0 0 20px rgba(236, 72, 153, 0.35);
+    }
+
+    /* 4. Bottom Dock */
+    #bottom-dock {
+      flex: 0 0 auto;
+      max-height: 38vh;
+      background: var(--panel-bg);
+      border-top: 1px solid var(--panel-border);
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      padding-bottom: env(safe-area-inset-bottom, 6px);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.6);
+    }
+
+    .tool-tabs {
+      display: flex;
+      overflow-x: auto;
+      background: #09031a;
+      border-bottom: 1px solid var(--panel-border);
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      flex-shrink: 0;
+    }
+    .tool-tabs::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      padding: 8px 12px;
+      background: transparent;
+      border: none;
+      color: #c4b5fd;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: inherit;
+      border-bottom: 3px solid transparent;
+    }
+    .tab-btn.active {
+      color: var(--neon-cyan);
+      border-bottom-color: var(--neon-cyan);
+      background: rgba(34, 211, 238, 0.1);
+      text-shadow: 0 0 8px rgba(34, 211, 238, 0.5);
+    }
+
+    .panels-container {
+      overflow-y: auto;
+      max-height: calc(38vh - 36px);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .tab-panel {
+      padding: 9px;
+      display: none;
+      gap: 7px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .tab-panel.active { display: flex; }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .control-label {
+      font-size: 12px;
+      color: #e2e8f0;
+      font-weight: 500;
+    }
+
+    select, input[type="text"] {
+      padding: 6px 8px;
+      background: #09031a;
+      border: 1px solid #4c1d95;
+      border-radius: 8px;
+      color: #f8fafc;
+      font-family: inherit;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .btn-action {
+      padding: 6px 12px;
+      background: #6d28d9;
+      color: white;
+      border: 1px solid #8b5cf6;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-family: inherit;
+      font-size: 12px;
+    }
+    .btn-action:active { transform: scale(0.96); }
+
+    .btn-toggle-active {
+      background: #facc15 !important;
+      color: #000 !important;
+      font-weight: 700;
+    }
+
+    .color-swatch-list { display: flex; gap: 5px; align-items: center; }
+    .color-swatch {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #fff;
+    }
+
+    /* Floating Item Toolbar */
+    #item-quick-toolbar {
+      position: absolute;
+      top: 54px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(17, 9, 38, 0.95);
+      padding: 5px 12px;
+      border-radius: 30px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+      border: 1px solid #6d28d9;
+      z-index: 150;
+      overflow-x: auto;
+      max-width: 94vw;
+    }
+    .quick-btn {
+      background: none;
+      border: none;
+      color: #f8fafc;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .quick-btn.delete { color: #f87171; }
+
+    /* Presentation Overlays */
+    #presentation-hud {
+      display: none;
+      position: absolute;
+      top: 18px;
+      right: 22px;
+      z-index: 2000;
+      background: rgba(17, 9, 38, 0.75);
+      padding: 6px 14px;
+      border-radius: 30px;
+      color: #e2e8f0;
+      font-size: 13px;
+      font-weight: 600;
+      pointer-events: none;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      backdrop-filter: blur(4px);
+    }
+
+    #presentation-tap-area {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1900;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    @media (orientation: landscape) {
+      #top-bar, #slide-strip, #bottom-dock, #item-quick-toolbar { display: none !important; }
+      #canvas-viewport { padding: 0 !important; background: #000000; }
+      #presentation-hud, #presentation-tap-area { display: block; }
+      .board-item { cursor: default !important; outline: none !important; }
+      .step-badge, .resize-handle { display: none !important; }
+    }
+
+    body.presenting-override #top-bar,
+    body.presenting-override #slide-strip,
+    body.presenting-override #bottom-dock, 
+    body.presenting-override #item-quick-toolbar { display: none !important; }
+    body.presenting-override #presentation-hud, 
+    body.presenting-override #presentation-tap-area { display: block !important; }
+    body.presenting-override .step-badge,
+    body.presenting-override .resize-handle { display: none !important; }
+
+    #pause-symbol {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 75px;
+      color: rgba(255, 255, 255, 0.9);
+      background: rgba(0, 0, 0, 0.65);
+      width: 125px;
+      height: 125px;
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2100;
+      pointer-events: none;
+    }
+
+    .anim-pop {
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.2); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <div id="score">স্কোর: 0</div>
-        <div id="target-box">খোঁজো: -</div>
-    </header>
+<div id="app-container">
+  
+  <!-- 1. Top Bar -->
+  <div id="top-bar">
+    <div class="app-title">
+      <span>🏫</span>
+      <span>নিওন প্রেজেন্টার</span>
+    </div>
+    <div class="top-actions">
+      <button class="btn-sm btn-install" id="pwa-install-btn" onclick="installPWA()">📲 অ্যাপ ইনস্টল</button>
+      <button class="btn-sm btn-theme" onclick="cycleBoardTheme()">🎨 নিওন থিম</button>
+      <button class="btn-sm btn-clear" onclick="clearCurrentSlide()">🗑️ সাফ</button>
+      <button class="btn-sm btn-save" onclick="saveToStorage()">💾 সেভ</button>
+      <button class="btn-sm btn-play-preview" onclick="togglePortraitPresentation()">▶️ প্লে</button>
+    </div>
+  </div>
 
-    <div id="game-container">
-        <canvas id="gameCanvas"></canvas>
+  <!-- 2. Slides Bar Strip -->
+  <div id="slide-strip">
+    <div id="slides-list" style="display:flex; gap:6px;"></div>
+    <button class="btn-add-slide" onclick="addNewSlide()">+ নতুন বোর্ড</button>
+    <button class="btn-sm" style="background:#4c1d95; color:#fff; border-radius:20px" onclick="duplicateCurrentSlide()">📋 কপি</button>
+    <button class="btn-sm" style="background:#7f1d1d; color:#fca5a5; border-radius:20px" onclick="deleteCurrentSlide()">❌ মুছুন</button>
+  </div>
+
+  <!-- 3. Canvas Viewport -->
+  <div id="canvas-viewport">
+    <div id="virtual-board" class="theme-neon-purple"></div>
+    <div id="pause-symbol">⏸️</div>
+  </div>
+
+  <!-- Floating Selection Toolbar -->
+  <div id="item-quick-toolbar">
+    <button class="quick-btn" onclick="editSelectedItem()">✏️ এডিট</button>
+    <button class="quick-btn" onclick="toggleItemUnderline()"><u>U</u> আন্ডারলাইন</button>
+    <button class="quick-btn" onclick="rotateSelectedItem()">🔄 ঘোরান</button>
+    <button class="quick-btn" onclick="bringItemForward()">🔝 সামনে</button>
+    <button class="quick-btn" onclick="sendItemBackward()">🔙 পেছনে</button>
+    <button class="quick-btn" id="voice-btn" onclick="recordAudioForSelected()">🎙️ অডিও</button>
+    <button class="quick-btn" onclick="testPlayVoice()">🔊 টেস্ট</button>
+    <button class="quick-btn delete" onclick="deleteSelectedItem()">🗑️ ডিলিট</button>
+  </div>
+
+  <!-- 4. Bottom Tool Dock -->
+  <div id="bottom-dock">
+    <div class="tool-tabs">
+      <button class="tab-btn active" onclick="switchTab('text-panel')">✍️ নিওন টেক্সট ও আন্ডারলাইন</button>
+      <button class="tab-btn" onclick="switchTab('shape-panel')">🔷 জ্যামিতিক আকার (বর্গসহ)</button>
+      <button class="tab-btn" onclick="switchTab('flowchart-panel')">🌳 ব্যাকরণ/ফ্লোচার্ট</button>
+      <button class="tab-btn" onclick="switchTab('pointer-panel')">🏹 অ্যারো ও পয়েন্টার</button>
+      <button class="tab-btn" onclick="switchTab('media-panel')">🖼️ ছবি ও অডিও</button>
+      <button class="tab-btn" onclick="switchTab('expert-panel')">🎓 শিক্ষক টুলস ও কুইজ</button>
+      <button class="tab-btn" onclick="switchTab('steps-panel')">🔢 স্টেপ ক্রম</button>
     </div>
 
-    <div id="controls">
-        <div class="d-pad">
-            <button class="btn" id="btn-up">↑</button>
-            <button class="btn" id="btn-left">←</button>
-            <button class="btn" id="btn-right">→</button>
-            <button class="btn" id="btn-down">↓</button>
+    <div class="panels-container">
+      <!-- Tab 1: Text, Underline & Colors -->
+      <div id="text-panel" class="tab-panel active">
+        <div class="control-group">
+          <input type="text" id="text-input" placeholder="বাংলায় লিখুন..." style="width: 135px;">
+          <button class="btn-action" onclick="addTextItem()">+ টেক্সট যোগ</button>
         </div>
+
+        <div class="control-group">
+          <!-- Text Underline Feature -->
+          <button class="btn-action" id="btn-underline-toggle" onclick="toggleUnderlinePreset()">
+            <u>U</u> আন্ডারলাইন রেখা
+          </button>
+        </div>
+
+        <div class="control-group">
+          <span class="control-label">ফন্ট:</span>
+          <select id="font-family-select" style="max-width: 125px;">
+            <option value="'Hind Siliguri', sans-serif">হিন্দ শিলিগুড়ি</option>
+            <option value="'Galada', cursive">গালাদা (আর্ট)</option>
+            <option value="'Atma', cursive">আত্মা (বাচ্চাদের)</option>
+            <option value="'Tiro Bangla', serif">তিরো বাংলা</option>
+            <option value="'Mina', sans-serif">মিনা</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <span class="control-label">সাইজ:</span>
+          <select id="font-size-select">
+            <option value="44">ছোট</option>
+            <option value="66" selected>মাঝারি</option>
+            <option value="96">বড়</option>
+            <option value="130">বিশাল</option>
+          </select>
+        </div>
+
+        <!-- Poster-like Neon Text Colors -->
+        <div class="control-group">
+          <span class="control-label">নিওন টেক্সট রং:</span>
+          <div class="color-swatch-list">
+            <div class="color-swatch" style="background:#facc15; box-shadow:0 0 6px #facc15" title="পোস্টার গোল্ডেন ইয়েলো" onclick="setTextPresetColor('#facc15')"></div>
+            <div class="color-swatch" style="background:#22d3ee; box-shadow:0 0 6px #22d3ee" title="নিওন সায়ান ব্লু" onclick="setTextPresetColor('#22d3ee')"></div>
+            <div class="color-swatch" style="background:#f43f5e; box-shadow:0 0 6px #f43f5e" title="পোস্টার ভাইব্রেন্ট রেড" onclick="setTextPresetColor('#f43f5e')"></div>
+            <div class="color-swatch" style="background:#ffffff; box-shadow:0 0 6px #ffffff" title="উজ্জ্বল সাদা" onclick="setTextPresetColor('#ffffff')"></div>
+            <div class="color-swatch" style="background:#4ade80; box-shadow:0 0 6px #4ade80" title="নিওন গ্রিন" onclick="setTextPresetColor('#4ade80')"></div>
+            <div class="color-swatch" style="background:#c084fc; box-shadow:0 0 6px #c084fc" title="নিওন পার্পল" onclick="setTextPresetColor('#c084fc')"></div>
+          </div>
+        </div>
+
+        <!-- Poster-like Text Ribbon / Backgrounds -->
+        <div class="control-group">
+          <span class="control-label">টেক্সট ব্যাকগ্রাউন্ড:</span>
+          <div class="color-swatch-list">
+            <div class="color-swatch" style="background:transparent; border:2px dashed #94a3b8" title="স্বচ্ছ" onclick="setTextBgPresetColor('transparent')"></div>
+            <div class="color-swatch" style="background:#b91c1c; border-color:#ef4444" title="পোস্টার লাল রিবন" onclick="setTextBgPresetColor('rgba(185, 28, 28, 0.95)')"></div>
+            <div class="color-swatch" style="background:#eab308; border-color:#fde047" title="পোস্টার সোনালী রিবন" onclick="setTextBgPresetColor('rgba(234, 179, 8, 0.95)')"></div>
+            <div class="color-swatch" style="background:#1e3a8a; border-color:#3b82f6" title="পোস্টার রয়্যাল ব্লু" onclick="setTextBgPresetColor('rgba(30, 58, 138, 0.95)')"></div>
+            <div class="color-swatch" style="background:#581c87; border-color:#a855f7" title="নিওন পার্পল রিবন" onclick="setTextBgPresetColor('rgba(88, 28, 135, 0.95)')"></div>
+            <div class="color-swatch" style="background:#14532d; border-color:#22c55e" title="পোস্টার সবুজ রিবন" onclick="setTextBgPresetColor('rgba(20, 83, 45, 0.95)')"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Shapes & Angles -->
+      <div id="shape-panel" class="tab-panel">
+        <button class="btn-action" onclick="addShapeItem('square')">⏹️ বর্গাকার (Square)</button>
+        <button class="btn-action" onclick="addShapeItem('triangle')">🔺 ত্রিভুজ (Triangle)</button>
+        <button class="btn-action" onclick="addShapeItem('round')">⚪ রাউন্ড / বৃত্ত (Circle)</button>
+        <button class="btn-action" onclick="addShapeItem('cone')">📐 সমকোণ (Angle / 90°)</button>
+        <button class="btn-action" onclick="addShapeItem('rect_corner')">📄 আয়তকার কোণ (Rectangle)</button>
+        <button class="btn-action" onclick="addShapeItem('ice_cone')">🍦 শঙ্কু / Cone 3D</button>
+        <button class="btn-action" onclick="addShapeItem('cylinder')">🛢️ সিলিন্ডার / চোঙ</button>
+      </div>
+
+      <!-- Tab 3: Flowchart & Grammar Tree -->
+      <div id="flowchart-panel" class="tab-panel">
+        <button class="btn-action" style="background:#0284c7" onclick="loadKarakGrammarTree()">
+          📚 কারকের নমুনা ট্রি লোড করুন
+        </button>
+        <button class="btn-action" onclick="addCustomFlowNode('root')">👑 মূল বিষয় (Root)</button>
+        <button class="btn-action" onclick="addCustomFlowNode('branch')">🌿 প্রধান ভাগ (Branch)</button>
+        <button class="btn-action" onclick="addCustomFlowNode('subbranch')">🍃 উপ-ভাগ (Sub-branch)</button>
+      </div>
+
+      <!-- Tab 4: Arrow & Pointers -->
+      <div id="pointer-panel" class="tab-panel">
+        <button class="btn-action" onclick="addArrowItem('right')">➡️ ডান অ্যারো</button>
+        <button class="btn-action" onclick="addArrowItem('down')">⬇️ নিচের অ্যারো</button>
+        <button class="btn-action" onclick="addArrowItem('curved')">⤵️ বাঁকানো অ্যারো</button>
+        <button class="btn-action" onclick="addArrowItem('double')">↔️ উভমুখী অ্যারো</button>
+        
+        <button class="btn-action" onclick="addPointerIcon('👉')">👉 তর্জনী হাত</button>
+        <button class="btn-action" onclick="addPointerIcon('👆')">👆 ঊর্ধ্বমুখী হাত</button>
+        <button class="btn-action" onclick="addPointerIcon('🔍')">🔍 ম্যাগনিফায়ার</button>
+        <button class="btn-action" onclick="addPointerIcon('⭐')">⭐ তারা</button>
+        <button class="btn-action" onclick="addPointerIcon('🎯')">🎯 ফোকাস বৃত্ত</button>
+      </div>
+
+      <!-- Tab 5: Media & Audio -->
+      <div id="media-panel" class="tab-panel">
+        <input type="file" id="image-file-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+        <button class="btn-action" onclick="document.getElementById('image-file-input').click()">📷 ছবি যোগ (Pinch Resize)</button>
+
+        <input type="file" id="audio-file-input" accept="audio/*" style="display: none;" onchange="handleAudioUpload(event)">
+        <button class="btn-action" style="background: #0284c7;" onclick="document.getElementById('audio-file-input').click()">🎵 অডিও ফাইল যোগ</button>
+      </div>
+
+      <!-- Tab 6: Teacher Tools -->
+      <div id="expert-panel" class="tab-panel">
+        <button class="btn-action" style="background:#e11d48" onclick="addHighlightBox()">🔲 হাইলাইট বক্স (Highlight)</button>
+        <button class="btn-action" style="background:#f59e0b; color:#000;" onclick="addRewardBadge()">🏆 সাবাশ / পুরস্কার ব্যাজ</button>
+        <button class="btn-action" style="background:#10b981" onclick="addQuestionCard()">❓ প্রশ্ন ও উত্তর কার্ড</button>
+        <button class="btn-action" style="background:#8b5cf6" onclick="addFillInBlankCard()">📝 শূন্যস্থান পূরণ</button>
+      </div>
+
+      <!-- Tab 7: Steps -->
+      <div id="steps-panel" class="tab-panel">
+        <span class="control-label">বর্তমান বোর্ডের স্টেপ তালিকা:</span>
+        <div id="steps-chip-container" style="display:flex; gap:6px; overflow-x:auto; width:100%;"></div>
+      </div>
     </div>
+  </div>
 
-    <div id="overlay" onclick="resetGame()">
-        <h1 id="overlay-msg">💥 গেম ওভার!</h1>
-        <p style="color: #aaa; font-size: 0.85rem;">আবার খেলতে স্ক্রিনে ট্যাপ করুন।</p>
-    </div>
+  <!-- Presentation HUD & Tap Detector -->
+  <div id="presentation-hud">
+    <span id="hud-status-text">চলছে (থামাতে টাচ করুন)</span>
+  </div>
+  <div id="presentation-tap-area" onclick="handlePresentationTap()"></div>
 
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const scoreEl = document.getElementById('score');
-        const targetBoxEl = document.getElementById('target-box');
-        const overlay = document.getElementById('overlay');
-        const overlayMsg = document.getElementById('overlay-msg');
+</div>
 
-        const COLS = 16;
-        let GRID_SIZE, ROWS, width, height;
+<script>
+  /* ========================================================
+     PWA SERVICE WORKER REGISTRATION & INSTALL LOGIC
+     ======================================================== */
+  let deferredPrompt = null;
+  const pwaInstallBtn = document.getElementById('pwa-install-btn');
 
-        const ALL_SEQUENCES =  [
-            ["কা", "কি", "কী", "কু", "কূ", "কৃ", "কে", "কৈ", "কো", "কৌ"],
-            ["খা", "খি", "খী", "খু", "খূ", "খৃ", "খে", "খৈ", "খো", "খৌ"],
-            ["গা", "গি", "গী", "গু", "গূ", "গৃ", "গে", "গৈ", "গো", "গৌ"],
-            ["ঘা", "ঘি", "ঘী", "ঘু", "ঘূ", "ঘৃ", "ঘে", "ঘৈ", "ঘো", "ঘৌ"],
-            ["চা", "চি", "চী", "চু", "চূ", "চৃ", "চে", "চৈ", "চো", "চৌ"],
-            ["জা", "জি", "জী", "জু", "জূ", "জৃ", "জে", "জৈ", "জো", "জৌ"],
-            ["টা", "টি", "টী", "টু", "টূ", "টৃ", "টে", "টৈ", "টো", "টৌ"],
-            ["তা", "তি", "তী", "তু", "তূ", "তৃ", "তে", "তৈ", "তো", "তৌ"],
-            ["দা", "দি", "দী", "দু", "দূ", "দৃ", "দে", "দৈ", "দো", "দৌ"],
-            ["পা", "পি", "পী", "পু", "পূ", "পৃ", "পে", "পৈ", "পো", "পৌ"],
-            ["বা", "বি", "বী", "বু", "বূ", "বৃ", "বে", "বৈ", "বো", "বৌ"],
-            ["মা", "মি", "মী", "মু", "মূ", "มৃ", "মে", "মৈ", "মো", "মৌ"],
-            ["সা", "সি", "সী", "সু", "সূ", "সৃ", "সে", "সৈ", "সো", "সৌ"]
-        ];
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then((reg) => console.log('SW Registered:', reg.scope))
+        .catch((err) => console.log('SW Registration failed:', err));
+    });
+  }
 
-        const SEQUENCE = ALL_SEQUENCES.flat();
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    pwaInstallBtn.style.display = 'flex'; // মোবাইল ব্রাউজারে ইনস্টল বাটন দৃশ্যমান হবে
+  });
 
-        let snake, dx, dy, score, currentTargetIndex, activeTargets, gameInterval;
-        let gameActive = false;
-
-        function playHissSound() {
-            try {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                if (!AudioContext) return;
-                const audioCtx = new AudioContext();
-                
-                const bufferSize = audioCtx.sampleRate * 0.25;
-                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                const data = buffer.getChannelData(0);
-                
-                for (let i = 0; i < bufferSize; i++) {
-                    data[i] = Math.random() * 2 - 1;
-                }
-                
-                const noise = audioCtx.createBufferSource();
-                noise.buffer = buffer;
-                
-                const filter = audioCtx.createBiquadFilter();
-                filter.type = 'highpass';
-                filter.frequency.setValueAtTime(3500, audioCtx.currentTime); 
-                
-                const gainNode = audioCtx.createGain();
-                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
-                
-                noise.connect(filter);
-                filter.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                
-                noise.start();
-            } catch (e) {
-                console.log("Audio Error:", e);
-            }
+  function installPWA() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          pwaInstallBtn.style.display = 'none';
         }
+        deferredPrompt = null;
+      });
+    }
+  }
 
-        function resizeGame() {
-            const container = document.getElementById('game-container');
-            const availW = container.clientWidth - 10;
-            const availH = container.clientHeight - 10;
+  /* ========================================================
+     STATE MANAGEMENT
+     ======================================================== */
+  const NATIVE_WIDTH = 1920;
+  const NATIVE_HEIGHT = 1080;
+  let canvasScale = 1;
 
-            GRID_SIZE = Math.floor(availW / COLS);
-            ROWS = Math.floor(availH / GRID_SIZE);
+  let currentTheme = 'theme-neon-purple';
 
-            width = COLS * GRID_SIZE;
-            height = ROWS * GRID_SIZE;
+  let slides = [
+    {
+      id: 'slide_1',
+      title: 'বোর্ড ১',
+      items: []
+    }
+  ];
+  let currentSlideIndex = 0;
+  let selectedItemId = null;
+  let activeTextPresetColor = '#facc15';
+  let activeTextBgColor = 'transparent';
+  let isUnderlinePresetActive = false; // আন্ডারলাইন টগল ট্র্যাক
 
-            canvas.width = width;
-            canvas.height = height;
+  // Presentation State
+  let isPresenting = false;
+  let isPaused = false;
+  let presSlideIndex = 0;
+  let presStepIndex = 0;
+  let presentationTimer = null;
+  const STEP_DELAY_MS = 2500;
 
-            if(!gameActive) drawStaticBG();
+  const viewport = document.getElementById('canvas-viewport');
+  const board = document.getElementById('virtual-board');
+  const quickToolbar = document.getElementById('item-quick-toolbar');
+  const hudStatus = document.getElementById('hud-status-text');
+  const pauseSymbol = document.getElementById('pause-symbol');
+  const slidesListContainer = document.getElementById('slides-list');
+
+  function getCurrentSlideItems() {
+    return slides[currentSlideIndex].items;
+  }
+
+  function renderSlidesStrip() {
+    slidesListContainer.innerHTML = '';
+    slides.forEach((slide, idx) => {
+      const chip = document.createElement('div');
+      chip.className = 'slide-chip' + (idx === currentSlideIndex ? ' active' : '');
+      chip.innerHTML = `<span>📑 ${slide.title} (${slide.items.length})</span>`;
+      chip.onclick = () => switchSlide(idx);
+      slidesListContainer.appendChild(chip);
+    });
+  }
+
+  function switchSlide(index) {
+    if (index < 0 || index >= slides.length) return;
+    currentSlideIndex = index;
+    selectItem(null);
+    renderCurrentSlideToBoard();
+    renderSlidesStrip();
+    updateStepsPanel();
+  }
+
+  function addNewSlide() {
+    const newIndex = slides.length + 1;
+    slides.push({
+      id: 'slide_' + Date.now(),
+      title: 'বোর্ড ' + newIndex,
+      items: []
+    });
+    switchSlide(slides.length - 1);
+  }
+
+  function duplicateCurrentSlide() {
+    const cur = slides[currentSlideIndex];
+    const clonedItems = JSON.parse(JSON.stringify(cur.items)).map(item => {
+      item.id = 'item_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+      return item;
+    });
+
+    slides.push({
+      id: 'slide_' + Date.now(),
+      title: cur.title + ' (কপি)',
+      items: clonedItems
+    });
+    switchSlide(slides.length - 1);
+  }
+
+  function deleteCurrentSlide() {
+    if (slides.length <= 1) {
+      alert("কমপক্ষে একটি বোর্ড থাকা আবশ্যক!");
+      return;
+    }
+    if (!confirm(`আপনি কি "${slides[currentSlideIndex].title}" বোর্ডটি মুছে ফেলতে চান?`)) return;
+
+    slides.splice(currentSlideIndex, 1);
+    if (currentSlideIndex >= slides.length) {
+      currentSlideIndex = slides.length - 1;
+    }
+    switchSlide(currentSlideIndex);
+  }
+
+  function renderCurrentSlideToBoard() {
+    board.innerHTML = '';
+    const items = getCurrentSlideItems();
+    items.forEach(item => renderItemOnBoard(item));
+  }
+
+  function clearCurrentSlide() {
+    if (!confirm("আপনি কি এই বোর্ডের সকল উপাদান মুছে ফেলতে চান?")) return;
+    slides[currentSlideIndex].items = [];
+    board.innerHTML = '';
+    selectItem(null);
+    updateStepsPanel();
+    renderSlidesStrip();
+  }
+
+  function resizeBoard() {
+    const vw = viewport.clientWidth;
+    const vh = viewport.clientHeight;
+    if (vw === 0 || vh === 0) return;
+    const scaleX = vw / NATIVE_WIDTH;
+    const scaleY = vh / NATIVE_HEIGHT;
+    canvasScale = Math.min(scaleX, scaleY) * (window.innerWidth > window.innerHeight ? 1 : 0.96);
+    board.style.transform = `scale(${canvasScale})`;
+  }
+
+  window.addEventListener('resize', () => {
+    resizeBoard();
+    checkOrientationPresentation();
+  });
+
+  function cycleBoardTheme() {
+    board.classList.remove('theme-neon-purple', 'theme-chalkboard', 'theme-white');
+    if (currentTheme === 'theme-neon-purple') {
+      currentTheme = 'theme-chalkboard';
+    } else if (currentTheme === 'theme-chalkboard') {
+      currentTheme = 'theme-white';
+    } else {
+      currentTheme = 'theme-neon-purple';
+    }
+    board.classList.add(currentTheme);
+  }
+
+  /* ========================================================
+     AUDIO SYNTHESIS
+     ======================================================== */
+  let audioCtx = null;
+  function playKidChime(toneType = 'standard') {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      if (toneType === 'reward') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+        osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
+        osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.65);
+      } else {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.18);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.28);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+      }
+    } catch(e) {}
+  }
+
+  function getNextStepOrder() {
+    return getCurrentSlideItems().length + 1;
+  }
+
+  /* ========================================================
+     ELEMENT BUILDERS WITH UNDERLINE SUPPORT
+     ======================================================== */
+  function toggleUnderlinePreset() {
+    isUnderlinePresetActive = !isUnderlinePresetActive;
+    const btn = document.getElementById('btn-underline-toggle');
+    if (isUnderlinePresetActive) {
+      btn.classList.add('btn-toggle-active');
+    } else {
+      btn.classList.remove('btn-toggle-active');
+    }
+  }
+
+  function addTextItem() {
+    const input = document.getElementById('text-input');
+    const text = input.value.trim() || "সুন্দর বাংলা ভাষা";
+    const font = document.getElementById('font-family-select').value;
+    const size = parseInt(document.getElementById('font-size-select').value, 10);
+
+    const items = getCurrentSlideItems();
+    const item = {
+      id: 'item_' + Date.now(),
+      type: 'text',
+      content: text,
+      font: font,
+      fontSize: size,
+      color: activeTextPresetColor,
+      bgColor: activeTextBgColor,
+      underline: isUnderlinePresetActive, // আন্ডারলাইন স্ট্যাটাস
+      x: 400,
+      y: 200 + (items.length % 5) * 80,
+      width: 'auto',
+      height: 'auto',
+      scale: 1,
+      rotation: 0,
+      step: getNextStepOrder(),
+      audioData: null
+    };
+
+    items.push(item);
+    renderItemOnBoard(item);
+    input.value = '';
+    updateStepsPanel();
+    renderSlidesStrip();
+    selectItem(item.id);
+  }
+
+  function toggleItemUnderline() {
+    if (!selectedItemId) return;
+    const item = getCurrentSlideItems().find(i => i.id === selectedItemId);
+    if (item && item.type === 'text') {
+      item.underline = !item.underline;
+      const dom = document.getElementById(item.id);
+      if (dom) {
+        const t = dom.querySelector('.item-text');
+        if (t) {
+          t.style.textDecoration = item.underline ? 'underline' : 'none';
+          t.style.textDecorationColor = item.color;
         }
+      }
+    }
+  }
 
-        function drawStaticBG() {
-            ctx.fillStyle = 'rgb(40, 44, 52)';
-            ctx.fillRect(0, 0, width, height);
+  function setTextPresetColor(color) {
+    activeTextPresetColor = color;
+    if (selectedItemId) {
+      const item = getCurrentSlideItems().find(i => i.id === selectedItemId);
+      if (item && item.type === 'text') {
+        item.color = color;
+        const dom = document.getElementById(item.id);
+        if (dom) {
+          const t = dom.querySelector('.item-text');
+          if (t) {
+            t.style.color = color;
+            if (item.underline) t.style.textDecorationColor = color;
+          }
         }
+      }
+    }
+  }
 
-        function initGame() {
-            snake = [{x: Math.floor(COLS/2), y: Math.floor(ROWS/2)}];
-            dx = 1; dy = 0;
-            score = 0;
-            currentTargetIndex = 0;
-            activeTargets = [];
-            
-            scoreEl.innerText = `স্কোর: ${score}`;
-            updateTargetUI();
-            generateTargets();
-            
-            overlay.style.display = 'none';
-            gameActive = true;
-
-            if(gameInterval) clearInterval(gameInterval);
-            gameInterval = setInterval(gameLoop, 220); 
+  function setTextBgPresetColor(bgColor) {
+    activeTextBgColor = bgColor;
+    if (selectedItemId) {
+      const item = getCurrentSlideItems().find(i => i.id === selectedItemId);
+      if (item && item.type === 'text') {
+        item.bgColor = bgColor;
+        const dom = document.getElementById(item.id);
+        if (dom) {
+          const t = dom.querySelector('.item-text');
+          if (t) t.style.backgroundColor = bgColor;
         }
+      }
+    }
+  }
 
-        function updateTargetUI() {
-            if (currentTargetIndex < SEQUENCE.length) {
-                targetBoxEl.innerText = `খোঁজো: ${SEQUENCE[currentTargetIndex]}`;
-            } else {
-                targetBoxEl.innerText = "শেষ!";
-            }
-        }
+  function addShapeItem(shapeType) {
+    let svgContent = '';
+    let w = 260, h = 260;
+    let label = '';
 
-        function generateTargets() {
-            if (currentTargetIndex >= SEQUENCE.length) return;
-            
-            activeTargets = [];
-            const correctLetter = SEQUENCE[currentTargetIndex];
-            
-            activeTargets.push({
-                letter: correctLetter,
-                pos: getRandomPos(),
-                isCorrect: true
-            });
+    if (shapeType === 'square') {
+      w = 260; h = 260;
+      label = 'বর্গক্ষেত্র (Square)';
+      svgContent = `
+        <svg viewBox="0 0 240 240" style="width:100%; height:100%;">
+          <rect x="25" y="25" width="190" height="190" rx="12" fill="rgba(192, 132, 252, 0.2)" stroke="#c084fc" stroke-width="10"/>
+          <text x="120" y="130" text-anchor="middle" font-size="28" font-weight="bold" fill="#facc15" font-family="'Hind Siliguri'">বর্গাকার (Square)</text>
+        </svg>
+      `;
+    } else if (shapeType === 'triangle') {
+      w = 260; h = 240;
+      label = 'ত্রিভুজ (Triangle)';
+      svgContent = `
+        <svg viewBox="0 0 240 220" style="width:100%; height:100%;">
+          <polygon points="120,20 25,190 215,190" fill="rgba(236, 72, 153, 0.2)" stroke="#ec4899" stroke-width="10" stroke-linejoin="round"/>
+          <text x="120" y="150" text-anchor="middle" font-size="26" font-weight="bold" fill="#facc15" font-family="'Hind Siliguri'">ত্রিভুজ</text>
+        </svg>
+      `;
+    } else if (shapeType === 'cone') {
+      w = 260; h = 240;
+      label = 'সমকোণ (৯০°)';
+      svgContent = `
+        <svg viewBox="0 0 240 220" style="width:100%; height:100%;">
+          <line x1="40" y1="20" x2="40" y2="180" stroke="#22d3ee" stroke-width="12" stroke-linecap="round"/>
+          <line x1="40" y1="180" x2="200" y2="180" stroke="#22d3ee" stroke-width="12" stroke-linecap="round"/>
+          <rect x="40" y="140" width="40" height="40" fill="none" stroke="#f43f5e" stroke-width="6"/>
+          <text x="90" y="130" font-size="28" font-weight="bold" fill="#facc15" font-family="'Hind Siliguri'">৯০°</text>
+        </svg>
+      `;
+    } else if (shapeType === 'round') {
+      w = 260; h = 260;
+      label = 'বৃত্ত (Circle)';
+      svgContent = `
+        <svg viewBox="0 0 240 240" style="width:100%; height:100%;">
+          <circle cx="120" cy="120" r="95" fill="rgba(34, 211, 238, 0.2)" stroke="#22d3ee" stroke-width="10"/>
+          <circle cx="120" cy="120" r="8" fill="#f43f5e"/>
+          <line x1="120" y1="120" x2="215" y2="120" stroke="#facc15" stroke-width="5" stroke-dasharray="8,6"/>
+          <text x="135" y="110" font-size="22" font-weight="bold" fill="#facc15" font-family="'Hind Siliguri'">ব্যাসার্ধ (r)</text>
+        </svg>
+      `;
+    } else if (shapeType === 'rect_corner') {
+      w = 340; h = 220;
+      label = 'আয়তক্ষেত্র (Rectangle)';
+      svgContent = `
+        <svg viewBox="0 0 320 200" style="width:100%; height:100%;">
+          <rect x="20" y="20" width="280" height="160" rx="14" fill="rgba(147, 51, 234, 0.2)" stroke="#a855f7" stroke-width="10"/>
+          <text x="160" y="115" text-anchor="middle" font-size="26" font-weight="bold" fill="#22d3ee" font-family="'Hind Siliguri'">আয়তাকার বক্স</text>
+        </svg>
+      `;
+    } else if (shapeType === 'ice_cone') {
+      w = 240; h = 280;
+      label = 'শঙ্কু (Cone)';
+      svgContent = `
+        <svg viewBox="0 0 240 280" style="width:100%; height:100%;">
+          <ellipse cx="120" cy="220" rx="80" ry="28" fill="rgba(250, 204, 21, 0.25)" stroke="#facc15" stroke-width="8"/>
+          <line x1="40" y1="220" x2="120" y2="30" stroke="#facc15" stroke-width="10" stroke-linecap="round"/>
+          <line x1="200" y1="220" x2="120" y2="30" stroke="#facc15" stroke-width="10" stroke-linecap="round"/>
+          <circle cx="120" cy="30" r="8" fill="#f43f5e"/>
+          <text x="120" y="270" text-anchor="middle" font-size="24" font-weight="bold" fill="#fde047" font-family="'Hind Siliguri'">শঙ্কু (Cone)</text>
+        </svg>
+      `;
+    } else if (shapeType === 'cylinder') {
+      w = 220; h = 290;
+      label = 'সিলিন্ডার / চোঙ';
+      svgContent = `
+        <svg viewBox="0 0 220 280" style="width:100%; height:100%;">
+          <ellipse cx="110" cy="50" rx="70" ry="24" fill="rgba(34, 211, 238, 0.25)" stroke="#22d3ee" stroke-width="8"/>
+          <line x1="40" y1="50" x2="40" y2="220" stroke="#22d3ee" stroke-width="8"/>
+          <line x1="180" y1="50" x2="180" y2="220" stroke="#22d3ee" stroke-width="8"/>
+          <ellipse cx="110" cy="220" rx="70" ry="24" fill="rgba(34, 211, 238, 0.25)" stroke="#22d3ee" stroke-width="8"/>
+          <text x="110" y="145" text-anchor="middle" font-size="24" font-weight="bold" fill="#38bdf8" font-family="'Hind Siliguri'">চোঙ / বেলন</text>
+        </svg>
+      `;
+    }
 
-            const wrongPool = SEQUENCE.filter(l => l !== correctLetter);
-            let usedLetters = new Set([correctLetter]);
+    const item = {
+      id: 'item_' + Date.now(),
+      type: 'shape',
+      svg: svgContent,
+      label: label,
+      width: w,
+      height: h,
+      scale: 1,
+      rotation: 0,
+      x: 550,
+      y: 300,
+      step: getNextStepOrder(),
+      audioData: null
+    };
 
-            for (let i = 0; i < 2; i++) {
-                let availablePool = wrongPool.filter(l => !usedLetters.has(l));
-                if (availablePool.length === 0) break; 
+    getCurrentSlideItems().push(item);
+    renderItemOnBoard(item);
+    updateStepsPanel();
+    renderSlidesStrip();
+    selectItem(item.id);
+  }
 
-                const dummy = availablePool[Math.floor(Math.random() * availablePool.length)];
-                usedLetters.add(dummy); 
+  function addHighlightBox() {
+    const item = {
+      id: 'item_' + Date.now(),
+      type: 'highlight_box',
+      width: 520,
+      height: 250,
+      scale: 1,
+      rotation: 0,
+      x: 500,
+      y: 300,
+      step: getNextStepOrder(),
+      audioData: null
+    };
+    getCurrentSlideItems().push(item);
+    renderItemOnBoard(item);
+    updateStepsPanel();
+    renderSlidesStrip();
+    selectItem(item.id);
+  }
 
-                let wPos = getRandomPos();
-                while (activeTargets.some(t => t.pos.x === wPos.x && t.pos.y === wPos.y)) {
-                    wPos = getRandomPos();
-                }
-                
-                activeTargets.push({ letter: dummy, pos: wPos, isCorrect: false });
-            }
-        }
+  function handleImageUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
 
-        function getRandomPos() {
-            while (true) {
-                const pos = {
-                    x: Math.floor(Math.random() * COLS),
-                    y: Math.floor(Math.random() * ROWS)
-                };
-                if (!snake.some(p => p.x === pos.x && p.y === pos.y)) {
-                    return pos;
-                }
-            }
-        }
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const item = {
+        id: 'item_' + Date.now(),
+        type: 'image',
+        src: evt.target.result,
+        width: 480,
+        height: 340,
+        scale: 1,
+        rotation: 0,
+        x: 450,
+        y: 260,
+        step: getNextStepOrder(),
+        audioData: null
+      };
+      getCurrentSlideItems().push(item);
+      renderItemOnBoard(item);
+      updateStepsPanel();
+      renderSlidesStrip();
+      selectItem(item.id);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  }
 
-        function gameLoop() {
-            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+  function addArrowItem(arrowType) {
+    let svgPath = '';
+    let w = 240, h = 90;
 
-            head.x = (head.x + COLS) % COLS;
-            head.y = (head.y + ROWS) % ROWS;
+    if (arrowType === 'right') {
+      svgPath = `<path d="M 20 45 L 180 45 M 145 20 L 185 45 L 145 70" fill="none" stroke="#22d3ee" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />`;
+    } else if (arrowType === 'down') {
+      w = 90; h = 240;
+      svgPath = `<path d="M 45 20 L 45 180 M 20 145 L 45 185 L 70 145" fill="none" stroke="#4ade80" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />`;
+    } else if (arrowType === 'curved') {
+      w = 220; h = 180;
+      svgPath = `<path d="M 30 30 Q 180 30 180 140 M 150 110 L 180 145 L 210 110" fill="none" stroke="#facc15" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />`;
+    } else if (arrowType === 'double') {
+      w = 260; h = 90;
+      svgPath = `<path d="M 45 45 L 215 45 M 70 20 L 40 45 L 70 70 M 190 20 L 220 45 L 190 70" fill="none" stroke="#f43f5e" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />`;
+    }
 
-            if (snake.some(part => part.x === head.x && part.y === head.y)) {
-                endGame("💥 গেম ওভার! নিজের শরীরে ধাক্কা লেগেছে।");
-                return;
-            }
+    const item = {
+      id: 'item_' + Date.now(),
+      type: 'arrow',
+      svg: `<svg viewBox="0 0 ${w} ${h}" style="width:100%; height:100%; filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.5));">${svgPath}</svg>`,
+      width: w,
+      height: h,
+      scale: 1,
+      rotation: 0,
+      x: 600,
+      y: 400,
+      step: getNextStepOrder(),
+      audioData: null
+    };
 
-            snake.unshift(head);
+    getCurrentSlideItems().push(item);
+    renderItemOnBoard(item);
+    updateStepsPanel();
+    renderSlidesStrip();
+    selectItem(item.id);
+  }
 
-            let ateSomething = false;
-            for (let i = 0; i < activeTargets.length; i++) {
-                const target = activeTargets[i];
-                if (head.x === target.pos.x && head.y === target.pos.y) {
-                    ateSomething = true;
-                    playHissSound();
-                    
-                    if (target.isCorrect) {
-                        score += 10;
-                        scoreEl.innerText = `স্কোর: ${score}`;
-                        currentTargetIndex++;
-                        
-                        if (currentTargetIndex >= SEQUENCE.length) {
-                            endGame("🎉 অসাধারণ! সব সেটের সমস্ত বর্ণ সঠিকভাবে শেষ হয়েছে!");
-                        } else {
-                            updateTargetUI();
-                            generateTargets();
-                        }
-                    } else {
-                        endGame(`❌ ভুল বর্ণ! আপনাকে '${SEQUENCE[currentTargetIndex]}' খেতে হতো।`);
-                    }
-                    break;
-                }
-            }
+  function addPointerIcon(symbol) {
+    const item = {
+      id: 'item_' + Date.now(),
+      type: 'pointer_icon',
+      symbol: symbol,
+      width: 140,
+      height: 140,
+      scale: 1,
+      rotation: 0,
+      x: 650,
+      y: 350,
+      step: getNextStepOrder(),
+      audioData: null
+    };
 
-            if (!ateSomething) {
-                snake.pop();
-            }
+    getCurrentSlideItems().push(item);
+    renderItemOnBoard(item);
+    updateStepsPanel();
+    renderSlidesStrip();
+    selectItem(item.id);
+  }
 
-            draw();
-        }
+  function addCustomFlowNode(nodeType) {
+    const title = prompt("বক্সের লেখা লিখুন:", nodeType === 'root' ? "কারক" : (nodeType === 'branch' ? "কর্তৃকারক" : "প্রযোজক কর্তা"));
+    if (!title) return;
 
-        function endGame(msg) {
-            clearInterval(gameInterval);
-            gameActive = false;
-            overlayMsg.innerText = msg;
-            overlay.style.display = 'flex';
-        }
+    let subDesc = prompt("ছোট বর্ণনা বা উদাহরণ (ঐচ্ছিক):", "");
 
-        function resetGame() {
-            if (!gameActive) initGame();
-        }
+    const item = {
+      id: 'item_' + Date.now(),
+      type: 'flow_node',
+      nodeType: nodeType,
+      title: title,
+      desc: subDesc || '',
+      width: nodeType === 'root' ? 360 : 310,
+      height: 'auto',
+      scale: 1,
+      rotation: 0,
+      x: 550,
+      y: 300,
+      step: getNextStepOrder(),
+      audioData: null
+    };
 
-        function draw() {
-            ctx.clearRect(0, 0, width, height);
-            drawStaticBG();
+    getCurrentSlideItems().push(item);
+    renderItemOnBoard(item);
+    updateStepsPanel();
+    renderSlidesStrip();
+    selectItem(item.id);
+  }
 
-            // ফল/বর্ণ রেন্ডার
-            activeTargets.forEach(target => {
-                ctx.fillStyle = 'rgb(255, 112, 67)';
-                ctx.font = `bold ${GRID_SIZE * 0.95}px 'Noto Sans', 'Arial', sans-serif`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(
-                    target.letter, 
-                    target.pos.x * GRID_SIZE + GRID_SIZE / 2, 
-                    target.pos.y * GRID_SIZE + GRID_SIZE / 2
-                );
-            });
+  function loadKarakGrammarTree() {
+    if (!confirm("কারকের নমুনা ট্রি এই বোর্ডে লোড করতে চান? (এটি সম্পূর্ণ এডিটযোগ্য)")) return;
+    const baseStep = getNextStepOrder();
 
-            // রিয়ালিস্টিক সাপ ড্র করা
-            snake.forEach((part, index) => {
-                const centerX = part.x * GRID_SIZE + GRID_SIZE / 2;
-                const centerY = part.y * GRID_SIZE + GRID_SIZE / 2;
-                
-                // লেজের দিকে ধীরে ধীরে সাইজ ছোট (Tapered body structure)
-                const taperFactor = Math.max(0.4, 1 - (index / Math.max(20, snake.length)));
-                const size = (GRID_SIZE - 2) * taperFactor;
-                const radius = size / 2;
+    const karakItems = [
+      {
+        id: 'karak_root_' + Date.now(),
+        type: 'flow_node',
+        nodeType: 'root',
+        title: 'কারক',
+        desc: 'বাক্যস্থিত ক্রিয়াপদের সাথে নামপদের সম্পর্ক',
+        width: 440,
+        height: 'auto',
+        scale: 1,
+        rotation: 0,
+        x: 740,
+        y: 80,
+        step: baseStep,
+        audioData: null
+      },
+      {
+        id: 'arr_root_down_' + Date.now(),
+        type: 'arrow',
+        svg: `<svg viewBox="0 0 90 200" style="width:100%; height:100%;"><path d="M 45 10 L 45 150 M 20 120 L 45 160 L 70 120" fill="none" stroke="#22d3ee" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" /></svg>`,
+        width: 80,
+        height: 160,
+        scale: 1,
+        rotation: 0,
+        x: 920,
+        y: 240,
+        step: baseStep + 1,
+        audioData: null
+      },
+      {
+        id: 'karak_b1_' + Date.now(),
+        type: 'flow_node',
+        nodeType: 'branch',
+        title: '১. কর্তৃকারক',
+        desc: 'যে নিজে ক্রিয়া সম্পাদন করে (কে/কারা)',
+        width: 420,
+        height: 'auto',
+        scale: 1,
+        rotation: 0,
+        x: 250,
+        y: 420,
+        step: baseStep + 2,
+        audioData: null
+      },
+      {
+        id: 'karak_b2_' + Date.now(),
+        type: 'flow_node',
+        nodeType: 'branch',
+        title: '২. কর্মকারক',
+        desc: 'যাকে আশ্রয় করে ক্রিয়া হয় (কী/কাকে)',
+        width: 420,
+        height: 'auto',
+        scale: 1,
+        rotation: 0,
+        x: 1250,
+        y: 420,
+        step: baseStep + 3,
+        audioData: null
+      },
+      {
+        id: 'arr_sub_1_' + Date.now(),
+        type: 'arrow',
+        svg: `<svg viewBox="0 0 90 180" style="width:100%; height:100%;"><path d="M 45 10 L 45 140 M 20 110 L 45 150 L 70 110" fill="none" stroke="#4ade80" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" /></svg>`,
+        width: 70,
+        height: 140,
+        scale: 1,
+        rotation: 0,
+        x: 420,
+        y: 590,
+        step: baseStep + 4,
+        audioData: null
+      },
+      {
+        id: 'karak_sub1_' + Date.now(),
+        type: 'flow_node',
+        nodeType: 'subbranch',
+        title: 'প্রধান ভাগসমূহ',
+        desc: '• মুখ্য কর্তা (ছেলেটি পড়ে)\n• প্রযোজক কর্তা (মা শিশুকে খাওয়াচ্ছেন)\n• ব্যতিহার কর্তা (বাঘে-মহিষে লড়াই)',
+        width: 480,
+        height: 'auto',
+        scale: 1,
+        rotation: 0,
+        x: 220,
+        y: 740,
+        step: baseStep + 5,
+        audioData: null
+      },
+      {
+        id: 'arr_sub_2_' + Date.now(),
+        type: 'arrow',
+        svg: `<svg viewBox="0 0 90 180" style="width:100%; height:100%;"><path d="M 45 10 L 45 140 M 20 110 L 45 150 L 70 110" fill="none" stroke="#facc15" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" /></svg>`,
+        width: 70,
+        height: 140,
+        scale: 1,
+        rotation: 0,
+        x: 1420,
+        y: 590,
+        step: baseStep + 6,
+        audioData: null
+      },
+      {
+        id: 'karak_sub2_' + Date.now(),
+        type: 'flow_node',
+        nodeType: 'subbranch',
+        title: 'প্রধান ভাগসমূহ',
+        desc: '• মুখ্য কর্ম (বাবা আমাকে কলম দিলেন)\n• গৌণ কর্ম (আমাকে)\n• সমধাতুজ কর্ম (বেশ এক ঘুম ঘুমিয়েছি)',
+        width: 480,
+        height: 'auto',
+        scale: 1,
+        rotation: 0,
+        x: 1220,
+        y: 740,
+        step: baseStep + 7,
+        audioData: null
+      }
+    ];
 
-                ctx.beginPath();
-                
-                if (index === 0) {
-                    // হেড গ্রাফিক্স (উজ্জ্বল সবুজ গ্রাডিয়েন্ট)
-                    let grad = ctx.createRadialGradient(centerX, centerY, 2, centerX, centerY, radius);
-                    grad.addColorStop(0, 'rgb(76, 175, 80)');
-                    grad.addColorStop(1, 'rgb(27, 94, 32)');
-                    ctx.fillStyle = grad;
-                    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-                    ctx.fill();
+    const curItems = getCurrentSlideItems();
+    karakItems.forEach(item => {
+      curItems.push(item);
+      renderItemOnBoard(item);
+    });
 
-                    // সাপের চোখ জেনারেট করা (গতির দিকের উপর ভিত্তি করে চোখের অবস্থান)
-                    ctx.fillStyle = 'rgb(255, 235, 59)'; // হলুদ চোখ
-                    const eyeOffset = radius * 0.4;
-                    const eyeSize = radius * 0.2;
+    updateStepsPanel();
+    renderSlidesStrip();
+  }
 
-                    if (dx === 1) { // ডানদিকে যাচ্ছে
-                        ctx.beginPath(); ctx.arc(centerX + eyeOffset, centerY - eyeOffset, eyeSize, 0, Math.PI * 2); ctx.fill();
-                        ctx.beginPath(); ctx.arc(centerX + eyeOffset, centerY + eyeOffset, eyeSize, 0, Math.PI * 2); ctx.fill();
-                    } else if (dx === -1) { // বামদিকে যাচ্ছে
-                        ctx.beginPath(); ctx.arc(centerX - eyeOffset, centerY - eyeOffset, eyeSize, 0, Math.PI * 2); ctx.fill();
-                        ctx.beginPath(); ctx.arc(centerX - eyeOffset, centerY + eyeOffset, eyeSize, 0, Math.PI * 2); ctx.fill();
-                    } else if (dy === 1) { // নিচের দিকে যাচ্ছে
-                        ctx.beginPath(); ctx.arc(centerX - eyeOffset, centerY + eyeOffset, eyeSize, 0, Math.PI * 2); ctx.fill();
-                        ctx.beginPath(); ctx.arc(centerX + eyeOffset, centerY + eyeOffset, eyeSize, 0, Math.PI * 2); ctx.fill();
-                    } else if (dy === -1) { // উপরের দিকে যাচ্ছে
-                        ctx.beginPath(); ctx.arc(centerX - eyeOffset, centerY - eyeOffset, eyeSize, 0, Math.PI * 2); ctx.fill();
-                        ctx.beginPath(); ctx.arc(centerX + eyeOffset, centerY - eyeOffset, eyeSize, 0, Math.PI * 2); ctx.fill();
-                    }
-                } else {
-                    // বডি গ্রাফিক্স (হালকা শেড দিয়ে গোল আকৃতির আইল)
-                    let grad = ctx.createRadialGradient(centerX, centerY, 1, centerX, centerY, radius);
-                    grad.addColorStop(0, 'rgb(129, 199, 132)');
-                    grad.addColorStop(1, 'rgb(46, 125, 50)');
-                    ctx.fillStyle = grad;
-                    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            });
-        }
+  function addQuestionCard() {
+    const q = prompt("প্রশ্নটি লিখুন:", "বুলবুলিতে ধান খেয়েছে — 'বুলবুলিতে' কোন কারক?");
+    if (!q) return;
+    const ans = prompt("সঠিক উত্তর লিখুন:", "কর্তৃকারকে ৭মী বিভক্তি");
 
-        function changeDirection(newDx, newDy) {
-            if (!gameActive) return;
-            if (newDx !== 0 && dx === 0) { dx = newDx; dy = 0; }
-            if (newDy !== 0 && dy === 0) { dx = 0; dy = newDy; }
-        }
+    const item = {
+      id: 'item_' + Date.now(),
+      type: 'expert_qa',
+      question: q,
+      answer: ans || '',
+      width: 580,
+      height: 'auto',
+      scale: 1,
+      rotation: 0,
+      x: 480,
+      y: 350,
+      step: getNextStepOrder(),
+      audioData: null
+    };
 
-        const bindControl = (id, newDx, newDy) => {
-            const btn = document.getElementById(id);
-            btn.addEventListener('touchstart', (e) => { e.preventDefault(); changeDirection(newDx, newDy); });
-            btn.addEventListener('mousedown', () => changeDirection(newDx, newDy));
+    getCurrentSlideItems().push(item);
+    renderItemOnBoard(item);
+    updateStepsPanel();
+    renderSlidesStrip();
+    selectItem(item.id);
+  }
+
+  function addRewardBadge() {
+    const text = prompt("প্রশংসাসূচক শব্দ লিখুন:", "দারুণ হয়েছে! শাবাশ ⭐");
+    const item = {
+      id: 'item_' + Date.now(),
+      type: 'expert_reward',
+      title: text || "চমৎকার!",
+      width: 420,
+      height: 'auto',
+      scale: 1,
+      rotation: 0,
+      x: 700,
+      y: 380,
+      step: getNextStepOrder(),
+      audioData: null
+    };
+
+    getCurrentSlideItems().push(item);
+    renderItemOnBoard(item);
+    updateStepsPanel();
+    renderSlidesStrip();
+    selectItem(item.id);
+  }
+
+  function addFillInBlankCard() {
+    const text = prompt("বাক্যটি লিখুন:", "পাখি সব করে _____");
+    const blankWord = prompt("সঠিক উত্তর:", "রব");
+    const item = {
+      id: 'item_' + Date.now(),
+      type: 'expert_blank',
+      text: text || "পাখি সব করে _____",
+      answer: blankWord || "রব",
+      width: 560,
+      height: 'auto',
+      scale: 1,
+      rotation: 0,
+      x: 520,
+      y: 340,
+      step: getNextStepOrder(),
+      audioData: null
+    };
+
+    getCurrentSlideItems().push(item);
+    renderItemOnBoard(item);
+    updateStepsPanel();
+    renderSlidesStrip();
+    selectItem(item.id);
+  }
+
+  /* ========================================================
+     DOM RENDERING & UNIVERSAL PINCH RESIZE / DRAG
+     ======================================================== */
+  function renderItemOnBoard(item) {
+    const el = document.createElement('div');
+    el.className = 'board-item';
+    el.id = item.id;
+    el.style.left = item.x + 'px';
+    el.style.top = item.y + 'px';
+    if (item.width !== 'auto') el.style.width = item.width + 'px';
+    if (item.height !== 'auto') el.style.height = item.height + 'px';
+    el.style.transform = `scale(${item.scale || 1}) rotate(${item.rotation || 0}deg)`;
+
+    const badge = document.createElement('div');
+    badge.className = 'step-badge';
+    badge.innerText = item.step;
+    badge.id = 'badge_' + item.id;
+    el.appendChild(badge);
+
+    const resizeHandle = document.createElement('div');
+    resizeHandle.className = 'resize-handle';
+    el.appendChild(resizeHandle);
+
+    if (item.type === 'text') {
+      const textDiv = document.createElement('div');
+      textDiv.className = 'item-text';
+      textDiv.innerText = item.content;
+      textDiv.style.fontFamily = item.font;
+      textDiv.style.fontSize = item.fontSize + 'px';
+      textDiv.style.color = item.color;
+      textDiv.style.backgroundColor = item.bgColor || 'transparent';
+      textDiv.style.textShadow = '0 0 10px rgba(0,0,0,0.8)';
+      if (item.underline) {
+        textDiv.style.textDecoration = 'underline';
+        textDiv.style.textDecorationColor = item.color;
+      }
+      el.appendChild(textDiv);
+    } else if (item.type === 'shape') {
+      el.innerHTML += item.svg;
+    } else if (item.type === 'highlight_box') {
+      el.innerHTML += `
+        <div style="width:100%; height:100%; border:6px dashed #22d3ee; border-radius:24px; background:rgba(34, 211, 238, 0.12); box-shadow: 0 0 35px rgba(34, 211, 238, 0.4); display:flex; align-items:center; justify-content:center;">
+          <span style="font-size:36px; font-weight:800; color:#facc15; font-family:'Hind Siliguri'; text-shadow:0 0 10px rgba(0,0,0,0.8);">এখানে মনোযোগ দিন 🔍</span>
+        </div>`;
+    } else if (item.type === 'image') {
+      const img = document.createElement('img');
+      img.className = 'item-image';
+      img.src = item.src;
+      el.appendChild(img);
+    } else if (item.type === 'arrow') {
+      el.innerHTML += item.svg;
+    } else if (item.type === 'pointer_icon') {
+      el.innerHTML += `<div style="font-size: 110px; text-align:center; filter:drop-shadow(0 0 12px rgba(250, 204, 21, 0.6));">${item.symbol}</div>`;
+    } else if (item.type === 'flow_node') {
+      el.innerHTML += `
+        <div class="flow-node ${item.nodeType}">
+          <div>${item.title}</div>
+          ${item.desc ? `<div style="font-size:24px; font-weight:normal; margin-top:8px; opacity:0.9; white-space:pre-line; color:#e2e8f0;">${item.desc}</div>` : ''}
+        </div>`;
+    } else if (item.type === 'expert_qa') {
+      el.innerHTML += `
+        <div style="background:rgba(23, 10, 48, 0.95); border:4px solid #8b5cf6; border-radius:24px; padding:24px; box-shadow:0 0 35px rgba(139, 92, 246, 0.4);">
+          <div style="color:#f43f5e; font-size:28px; font-weight:bold;">প্রশ্ন:</div>
+          <div style="color:#f8fafc; font-size:38px; font-weight:bold; margin:8px 0 14px 0;">${item.question}</div>
+          <div style="background:rgba(6, 78, 59, 0.8); padding:14px; border-radius:12px; border-left:6px solid #10b981; color:#34d399; font-size:30px; font-weight:bold;">
+            💡 উত্তর: ${item.answer}
+          </div>
+        </div>`;
+    } else if (item.type === 'expert_reward') {
+      el.innerHTML += `
+        <div style="background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; border-radius:30px; padding:26px 40px; text-align:center; box-shadow:0 0 35px rgba(245, 158, 11, 0.6); border:4px solid #fff;">
+          <div style="font-size:80px; margin-bottom:8px;">🏆</div>
+          <div style="font-size:50px; font-weight:800; font-family:'Atma';">${item.title}</div>
+        </div>`;
+    } else if (item.type === 'expert_blank') {
+      el.innerHTML += `
+        <div style="background:rgba(15, 23, 42, 0.95); border:4px dashed #06b6d4; border-radius:24px; padding:26px; text-align:center; box-shadow:0 0 30px rgba(6, 182, 212, 0.35);">
+          <div style="font-size:42px; color:#f8fafc; font-weight:bold;">${item.text}</div>
+          <div style="margin-top:14px; display:inline-block; background:#0891b2; color:#fff; padding:6px 24px; border-radius:14px; font-size:32px; font-weight:bold;">
+            উত্তর: ${item.answer}
+          </div>
+        </div>`;
+    }
+
+    attachUniversalPinchEvents(el, item, resizeHandle);
+    board.appendChild(el);
+  }
+
+  function attachUniversalPinchEvents(el, item, resizeHandle) {
+    let startX = 0, startY = 0;
+    let initialItemX = 0, initialItemY = 0;
+    let isDragging = false;
+    let initialPinchDistance = null;
+    let initialScale = 1;
+
+    el.addEventListener('touchstart', (e) => {
+      if (isPresenting) return;
+      selectItem(item.id);
+
+      if (e.touches.length === 1) {
+        isDragging = true;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        initialItemX = item.x;
+        initialItemY = item.y;
+      } else if (e.touches.length === 2) {
+        isDragging = false;
+        initialPinchDistance = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        initialScale = item.scale || 1;
+      }
+    }, { passive: false });
+
+    window.addEventListener('touchmove', (e) => {
+      if (isPresenting || !selectedItemId || selectedItemId !== item.id) return;
+
+      if (e.touches.length === 1 && isDragging) {
+        if (e.cancelable) e.preventDefault();
+        const deltaX = (e.touches[0].clientX - startX) / canvasScale;
+        const deltaY = (e.touches[0].clientY - startY) / canvasScale;
+        item.x = Math.round(initialItemX + deltaX);
+        item.y = Math.round(initialItemY + deltaY);
+        el.style.left = item.x + 'px';
+        el.style.top = item.y + 'px';
+      } else if (e.touches.length === 2 && initialPinchDistance) {
+        if (e.cancelable) e.preventDefault();
+        const currentDistance = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        const pinchRatio = currentDistance / initialPinchDistance;
+        let newScale = Math.min(Math.max(initialScale * pinchRatio, 0.3), 5.0);
+        item.scale = parseFloat(newScale.toFixed(2));
+        el.style.transform = `scale(${item.scale}) rotate(${item.rotation || 0}deg)`;
+      }
+    }, { passive: false });
+
+    window.addEventListener('touchend', (e) => {
+      if (e.touches.length === 0) {
+        isDragging = false;
+        initialPinchDistance = null;
+      }
+    });
+
+    el.addEventListener('mousedown', (e) => {
+      if (isPresenting || e.target === resizeHandle) return;
+      selectItem(item.id);
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      initialItemX = item.x;
+      initialItemY = item.y;
+
+      function onMouseMove(ev) {
+        if (!isDragging) return;
+        const deltaX = (ev.clientX - startX) / canvasScale;
+        const deltaY = (ev.clientY - startY) / canvasScale;
+        item.x = Math.round(initialItemX + deltaX);
+        item.y = Math.round(initialItemY + deltaY);
+        el.style.left = item.x + 'px';
+        el.style.top = item.y + 'px';
+      }
+
+      function onMouseUp() {
+        isDragging = false;
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mouseup', onMouseUp);
+      }
+
+      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('mouseup', onMouseUp);
+    });
+
+    resizeHandle.addEventListener('touchstart', (e) => {
+      e.stopPropagation();
+      const touch = e.touches[0];
+      const startTouchX = touch.clientX;
+      const initialS = item.scale || 1;
+
+      function onHandleMove(ev) {
+        ev.preventDefault();
+        const curX = ev.touches[0].clientX;
+        const diff = (curX - startTouchX) / 100;
+        let targetScale = Math.min(Math.max(initialS + diff, 0.3), 5.0);
+        item.scale = parseFloat(targetScale.toFixed(2));
+        el.style.transform = `scale(${item.scale}) rotate(${item.rotation || 0}deg)`;
+      }
+
+      function onHandleEnd() {
+        window.removeEventListener('touchmove', onHandleMove);
+        window.removeEventListener('touchend', onHandleEnd);
+      }
+
+      window.addEventListener('touchmove', onHandleMove, { passive: false });
+      window.addEventListener('touchend', onHandleEnd);
+    });
+  }
+
+  function selectItem(id) {
+    if (isPresenting) return;
+    selectedItemId = id;
+    document.querySelectorAll('.board-item').forEach(el => el.classList.remove('selected'));
+    
+    if (id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.add('selected');
+        quickToolbar.style.display = 'flex';
+      }
+    } else {
+      quickToolbar.style.display = 'none';
+    }
+  }
+
+  board.addEventListener('click', (e) => {
+    if (e.target === board) selectItem(null);
+  });
+
+  function editSelectedItem() {
+    if (!selectedItemId) return;
+    const item = getCurrentSlideItems().find(i => i.id === selectedItemId);
+    if (!item) return;
+
+    if (item.type === 'text') {
+      const newT = prompt("নতুন টেক্সট লিখুন:", item.content);
+      if (newT !== null) {
+        item.content = newT;
+        const dom = document.getElementById(item.id);
+        if (dom) dom.querySelector('.item-text').innerText = newT;
+      }
+    } else if (item.type === 'flow_node') {
+      const newTitle = prompt("শিরোনাম এডিট করুন:", item.title);
+      if (newTitle !== null) item.title = newTitle;
+      const newDesc = prompt("বিবরণ এডিট করুন:", item.desc);
+      if (newDesc !== null) item.desc = newDesc;
+      renderCurrentSlideToBoard();
+      selectItem(item.id);
+    } else if (item.type === 'expert_qa') {
+      const newQ = prompt("প্রশ্ন এডিট করুন:", item.question);
+      if (newQ !== null) item.question = newQ;
+      const newA = prompt("উত্তর এডিট করুন:", item.answer);
+      if (newA !== null) item.answer = newA;
+      renderCurrentSlideToBoard();
+      selectItem(item.id);
+    } else if (item.type === 'expert_blank') {
+      const newTxt = prompt("বাক্য এডিট করুন:", item.text);
+      if (newTxt !== null) item.text = newTxt;
+      const newAns = prompt("উত্তর এডিট করুন:", item.answer);
+      if (newAns !== null) item.answer = newAns;
+      renderCurrentSlideToBoard();
+      selectItem(item.id);
+    } else {
+      alert("এই উপাদানটি রিসাইজ বা রোটেট করতে পারেন।");
+    }
+  }
+
+  function rotateSelectedItem() {
+    if (!selectedItemId) return;
+    const item = getCurrentSlideItems().find(i => i.id === selectedItemId);
+    if (!item) return;
+    item.rotation = ((item.rotation || 0) + 15) % 360;
+    const el = document.getElementById(item.id);
+    if (el) el.style.transform = `scale(${item.scale || 1}) rotate(${item.rotation}deg)`;
+  }
+
+  function deleteSelectedItem() {
+    if (!selectedItemId) return;
+    const items = getCurrentSlideItems();
+    const idx = items.findIndex(i => i.id === selectedItemId);
+    if (idx !== -1) {
+      items.splice(idx, 1);
+    }
+    const el = document.getElementById(selectedItemId);
+    if (el) el.remove();
+    selectItem(null);
+    normalizeStepsOrder();
+    updateStepsPanel();
+    renderSlidesStrip();
+  }
+
+  function bringItemForward() {
+    if (!selectedItemId) return;
+    const el = document.getElementById(selectedItemId);
+    if (el) board.appendChild(el);
+  }
+
+  function sendItemBackward() {
+    if (!selectedItemId) return;
+    const el = document.getElementById(selectedItemId);
+    if (el && board.firstChild) board.insertBefore(el, board.firstChild);
+  }
+
+  /* ========================================================
+     AUDIO RECORD & PLAYBACK
+     ======================================================== */
+  let mediaRecorder = null;
+  let audioChunks = [];
+
+  async function recordAudioForSelected() {
+    if (!selectedItemId) {
+      alert("আগে একটি উপাদান সিলেক্ট করুন।");
+      return;
+    }
+    const item = getCurrentSlideItems().find(i => i.id === selectedItemId);
+    if (!item) return;
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert("মাইক পারমিশন ব্রাউজারে সাপোর্ট করছে না।");
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioChunks = [];
+      mediaRecorder = new MediaRecorder(stream);
+      
+      const vBtn = document.getElementById('voice-btn');
+      vBtn.innerHTML = '⏹️ থামান';
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          item.audioData = reader.result;
+          alert("ভয়েস সফলভাবে যুক্ত হয়েছে!");
+          vBtn.innerHTML = '🎙️ অডিও দেওয়া আছে';
         };
+        reader.readAsDataURL(audioBlob);
+        stream.getTracks().forEach(track => track.stop());
+      };
 
-        bindControl('btn-up', 0, -1);
-        bindControl('btn-down', 0, 1);
-        bindControl('btn-left', -1, 0);
-        bindControl('btn-right', 1, 0);
+      vBtn.onclick = () => {
+        mediaRecorder.stop();
+        vBtn.innerHTML = '🎙️ অডিও';
+        vBtn.onclick = recordAudioForSelected;
+      };
 
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowUp') changeDirection(0, -1);
-            if (e.key === 'ArrowDown') changeDirection(0, 1);
-            if (e.key === 'ArrowLeft') changeDirection(-1, 0);
-            if (e.key === 'ArrowRight') changeDirection(1, 0);
-        });
+      mediaRecorder.start();
+    } catch(err) {
+      alert("মাইক অনুমতি দিন।");
+    }
+  }
 
-        window.addEventListener('resize', resizeGame);
-        window.addEventListener('orientationchange', () => setTimeout(resizeGame, 200));
+  function testPlayVoice() {
+    if (!selectedItemId) return;
+    const item = getCurrentSlideItems().find(i => i.id === selectedItemId);
+    if (item && item.audioData) {
+      new Audio(item.audioData).play();
+    } else {
+      alert("এই উপাদানে কোনো অডিও যুক্ত নেই।");
+    }
+  }
 
-        resizeGame();
-        initGame();
-    </script>
+  function handleAudioUpload(e) {
+    if (!selectedItemId) {
+      alert("প্রথমে একটি উপাদান সিলেক্ট করুন।");
+      return;
+    }
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const item = getCurrentSlideItems().find(i => i.id === selectedItemId);
+      if (item) {
+        item.audioData = evt.target.result;
+        alert("অডিও ফাইল যুক্ত হয়েছে!");
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  }
+
+  function normalizeStepsOrder() {
+    const items = getCurrentSlideItems();
+    items.forEach((item, idx) => {
+      item.step = idx + 1;
+      const b = document.getElementById('badge_' + item.id);
+      if (b) b.innerText = item.step;
+    });
+  }
+
+  function updateStepsPanel() {
+    const cont = document.getElementById('steps-chip-container');
+    cont.innerHTML = '';
+    const items = getCurrentSlideItems();
+    items.forEach((item) => {
+      const chip = document.createElement('div');
+      chip.style.cssText = `padding: 5px 10px; background: #190e38; border:1px solid #4c1d95; border-radius: 20px; font-size: 12px; white-space: nowrap; cursor: pointer; color:#c4b5fd;`;
+      let label = item.type === 'text' ? item.content.slice(0, 10) + '...' : (item.label || item.title || item.type);
+      chip.innerHTML = `<strong>#${item.step}</strong> ${label}`;
+      chip.onclick = () => selectItem(item.id);
+      cont.appendChild(chip);
+    });
+  }
+
+  /* ========================================================
+     PRESENTATION ENGINE (SEAMLESS MULTI-SLIDE RUNNER)
+     ======================================================== */
+  function checkOrientationPresentation() {
+    const isLandscape = window.innerWidth > window.innerHeight;
+    if (isLandscape && !isPresenting) {
+      startPresentation();
+    } else if (!isLandscape && isPresenting && !document.body.classList.contains('presenting-override')) {
+      stopPresentation();
+    }
+  }
+
+  function togglePortraitPresentation() {
+    if (isPresenting) {
+      document.body.classList.remove('presenting-override');
+      stopPresentation();
+    } else {
+      document.body.classList.add('presenting-override');
+      startPresentation();
+    }
+  }
+
+  function startPresentation() {
+    const hasItems = slides.some(s => s.items.length > 0);
+    if (!hasItems) {
+      alert("বোর্ডে প্রথমে কিছু উপাদান যোগ করুন!");
+      return;
+    }
+
+    isPresenting = true;
+    isPaused = false;
+    presSlideIndex = 0;
+    presStepIndex = 0;
+    selectItem(null);
+
+    loadSlideForPresentation(presSlideIndex, false);
+  }
+
+  function loadSlideForPresentation(sIndex, useFade = true) {
+    if (sIndex >= slides.length) {
+      hudStatus.innerText = '🎉 সম্পূর্ণ প্রেজেন্টেশন সমাপ্ত!';
+      return;
+    }
+
+    presSlideIndex = sIndex;
+    presStepIndex = 0;
+
+    const setupNewSlide = () => {
+      board.innerHTML = '';
+      const items = slides[presSlideIndex].items;
+      items.forEach(item => {
+        renderItemOnBoard(item);
+        const el = document.getElementById(item.id);
+        if (el) {
+          el.style.display = 'none';
+          el.classList.remove('anim-pop');
+        }
+      });
+
+      hudStatus.innerText = 'চলছে (থামাতে টাচ করুন)';
+      pauseSymbol.style.display = 'none';
+      board.style.opacity = '1';
+
+      clearTimeout(presentationTimer);
+      presentationTimer = setTimeout(playNextStep, 500);
+    };
+
+    if (useFade) {
+      board.style.opacity = '0';
+      setTimeout(() => {
+        setupNewSlide();
+      }, 450);
+    } else {
+      board.style.opacity = '1';
+      setupNewSlide();
+    }
+  }
+
+  function playNextStep() {
+    if (!isPresenting || isPaused) return;
+
+    const currentSlide = slides[presSlideIndex];
+    const items = currentSlide.items;
+
+    if (presStepIndex < items.length) {
+      const item = items[presStepIndex];
+      const el = document.getElementById(item.id);
+
+      if (el) {
+        el.style.display = 'inline-block';
+        el.classList.add('anim-pop');
+
+        if (item.type === 'expert_reward') {
+          playKidChime('reward');
+        } else {
+          playKidChime('standard');
+        }
+
+        if (item.audioData) {
+          new Audio(item.audioData).play().catch(()=>{});
+        }
+      }
+
+      presStepIndex++;
+      presentationTimer = setTimeout(playNextStep, STEP_DELAY_MS);
+    } else {
+      if (presSlideIndex + 1 < slides.length) {
+        presentationTimer = setTimeout(() => {
+          loadSlideForPresentation(presSlideIndex + 1, true);
+        }, 1200);
+      } else {
+        hudStatus.innerText = '🎉 সম্পূর্ণ প্রেজেন্টেশন সমাপ্ত!';
+      }
+    }
+  }
+
+  function handlePresentationTap() {
+    if (!isPresenting) return;
+
+    isPaused = !isPaused;
+    if (isPaused) {
+      clearTimeout(presentationTimer);
+      hudStatus.innerText = '⏸️ থেমে আছে (চালু করতে টাচ করুন)';
+      pauseSymbol.style.display = 'flex';
+    } else {
+      hudStatus.innerText = 'চলছে (থামাতে টাচ করুন)';
+      pauseSymbol.style.display = 'none';
+      playNextStep();
+    }
+  }
+
+  function stopPresentation() {
+    isPresenting = false;
+    isPaused = false;
+    clearTimeout(presentationTimer);
+    pauseSymbol.style.display = 'none';
+    board.style.opacity = '1';
+
+    switchSlide(currentSlideIndex);
+  }
+
+  /* ========================================================
+     STORAGE & INITIALIZATION
+     ======================================================== */
+  function saveToStorage() {
+    localStorage.setItem('school_neon_multislide_data', JSON.stringify(slides));
+    alert("আপনার সকল স্লাইড ও ডায়াগ্রাম ডিভাইসে সেভ হয়েছে!");
+  }
+
+  function loadFromStorage() {
+    const raw = localStorage.getItem('school_neon_multislide_data');
+    if (raw) {
+      try {
+        const loaded = JSON.parse(raw);
+        if (Array.isArray(loaded) && loaded.length > 0) {
+          slides = loaded;
+          currentSlideIndex = 0;
+        }
+      } catch(e) {}
+    }
+    renderSlidesStrip();
+    renderCurrentSlideToBoard();
+    updateStepsPanel();
+  }
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+    event.currentTarget.classList.add('active');
+    const panel = document.getElementById(tabId);
+    if (panel) panel.classList.add('active');
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    resizeBoard();
+    loadFromStorage();
+    checkOrientationPresentation();
+  });
+</script>
 </body>
 </html>
