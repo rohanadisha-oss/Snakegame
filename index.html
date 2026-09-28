@@ -11,9 +11,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3247/3247414.png">
 
-  <!-- Premium Bengali Typography -->
+  <!-- Google Fonts: Bengali Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Atma:wght@500;600;700&family=Galada&family=Hind+Siliguri:wght@400;500;600;700&family=Mina:wght@400;700&family=Noto+Sans+Bengali:wght@400;600;700&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
   
   <style>
@@ -59,7 +59,7 @@
       overflow: hidden;
     }
 
-    /* 1. Header Navigation Bar */
+    /* ১. টপ বার */
     #top-bar {
       flex: 0 0 50px;
       height: 50px;
@@ -106,6 +106,13 @@
     .btn-sm:active { transform: scale(0.94); }
     .btn-theme { background: #4c1d95; color: #ede9fe; border: 1px solid #7c3aed; }
     .btn-save { background: #059669; color: #fff; border: 1px solid #10b981; }
+    .btn-video { 
+      background: linear-gradient(135deg, #0284c7, #0369a1); 
+      color: #fff; 
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(2, 132, 199, 0.45);
+      border: 1px solid #38bdf8;
+    }
     .btn-play-preview { 
       background: linear-gradient(135deg, #facc15, #f59e0b); 
       color: #070314; 
@@ -114,7 +121,7 @@
     }
     .btn-clear { background: #991b1b; color: #fee2e2; }
 
-    /* 2. Slide Navigation Strip */
+    /* ২. স্লাইড বার */
     #slide-strip {
       flex: 0 0 46px;
       height: 46px;
@@ -170,7 +177,7 @@
       box-shadow: 0 0 12px rgba(5, 150, 105, 0.4);
     }
 
-    /* 3. Canvas Viewport */
+    /* ৩. ক্যানভাস ভিউপোর্ট */
     #canvas-viewport {
       flex: 1 1 auto;
       min-height: 0;
@@ -184,7 +191,7 @@
       touch-action: none;
     }
 
-    /* Virtual Board (1920x1080 Native) */
+    /* ১৬:৯ ভার্চুয়াল বোর্ড */
     #virtual-board {
       width: 1920px;
       height: 1080px;
@@ -218,13 +225,14 @@
       border: 4px solid #cbd5e1;
     }
 
-    /* Board Items */
+    /* বোর্ড আইটেম কনটেইনার */
     .board-item {
       position: absolute;
       touch-action: none;
       transform-origin: center center;
       display: inline-block;
       cursor: grab;
+      max-width: 1500px;
     }
 
     .board-item.selected {
@@ -271,13 +279,16 @@
       z-index: 1002;
     }
 
+    /* অটো-র‌্যাপ এবং টেক্সট বক্স সীমানা ফিক্স */
     .item-text {
-      white-space: pre-wrap;
-      word-break: break-word;
-      line-height: 1.35;
-      padding: 10px 20px;
+      white-space: pre-wrap !important;
+      word-break: break-word !important;
+      overflow-wrap: break-word !important;
+      max-width: 1400px;
+      line-height: 1.4;
+      padding: 12px 22px;
       border-radius: 14px;
-      display: inline-block;
+      display: block;
       text-decoration-thickness: 4px;
       text-underline-offset: 7px;
     }
@@ -291,7 +302,6 @@
       border-radius: 12px;
     }
 
-    /* Flowchart / Tree Nodes */
     .flow-node {
       border-radius: 20px;
       padding: 18px 30px;
@@ -305,6 +315,8 @@
       justify-content: center;
       background: rgba(18, 7, 40, 0.94);
       backdrop-filter: blur(10px);
+      max-width: 750px;
+      word-break: break-word;
     }
     .flow-node.root {
       border-color: #38bdf8;
@@ -325,7 +337,7 @@
       box-shadow: 0 0 20px rgba(236, 72, 153, 0.35);
     }
 
-    /* Floating Item Mini Toolbar */
+    /* ফ্লোটিং টুলবার */
     #item-quick-toolbar {
       position: absolute;
       top: 106px;
@@ -361,7 +373,7 @@
     .quick-btn:active { background: rgba(255,255,255,0.1); }
     .quick-btn.delete { color: #f87171; }
 
-    /* 4. Bottom Control Panel */
+    /* ৪. বটম কন্ট্রোল ডক */
     #bottom-dock {
       flex: 0 0 auto;
       max-height: 40vh;
@@ -431,6 +443,21 @@
       font-weight: 500;
     }
 
+    textarea.styled-text-input {
+      padding: 8px 10px;
+      background: #090218;
+      border: 1px solid #4c1d95;
+      border-radius: 8px;
+      color: #f8fafc;
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      min-width: 180px;
+      max-width: 260px;
+      height: 38px;
+      resize: none;
+    }
+
     select, input[type="text"] {
       padding: 6px 9px;
       background: #090218;
@@ -477,9 +504,31 @@
     }
     .color-swatch:active { transform: scale(1.15); }
 
-    /* ========================================================
-       5. Clean Presentation Mode
-       ======================================================== */
+    /* ৫. ভিডিও রেকর্ডিং স্টেটাস ওভারলে */
+    #recording-indicator {
+      position: absolute;
+      top: 18px;
+      left: 20px;
+      background: rgba(220, 38, 38, 0.9);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      z-index: 2200;
+      box-shadow: 0 0 15px rgba(220, 38, 38, 0.8);
+      animation: pulseRecord 1s infinite alternate;
+      pointer-events: none;
+    }
+    @keyframes pulseRecord {
+      0% { opacity: 0.7; }
+      100% { opacity: 1; transform: scale(1.04); }
+    }
+
+    /* ৬. প্রেজেন্টেশন ফুলস্ক্রিন এরিয়া */
     #presentation-tap-area {
       display: none;
       position: absolute;
@@ -539,13 +588,14 @@
 
 <div id="app-container">
   
-  <!-- 1. Header Toolbar -->
+  <!-- ১. হেডার নেভিগেশন বার -->
   <div id="top-bar">
     <div class="app-brand">
       <span>🏫</span>
       <span>কিডস প্রেজেন্টার প্রো</span>
     </div>
     <div class="top-actions">
+      <button class="btn-sm btn-video" id="btn-export-video" onclick="exportPresentationAsVideo()">🎥 ভিডিও সেভ</button>
       <button class="btn-sm btn-theme" onclick="cycleBoardTheme()">🎨 নিওন থিম</button>
       <button class="btn-sm btn-clear" onclick="clearCurrentSlide()">🗑️ সাফ</button>
       <button class="btn-sm btn-save" onclick="saveToStorage()">💾 সেভ</button>
@@ -553,7 +603,7 @@
     </div>
   </div>
 
-  <!-- 2. Slides Bar Strip -->
+  <!-- ২. স্লাইড স্ট্রিপ -->
   <div id="slide-strip">
     <button class="btn-add-slide" onclick="addNewSlide()">+ নতুন বোর্ড</button>
     <div id="slides-list" style="display:flex; gap:6px;"></div>
@@ -561,13 +611,14 @@
     <button class="btn-sm" style="background:#7f1d1d; color:#fca5a5; border-radius:20px" onclick="deleteCurrentSlide()">❌ মুছুন</button>
   </div>
 
-  <!-- 3. Canvas Viewport -->
+  <!-- ৩. ক্যানভাস ভিউপোর্ট -->
   <div id="canvas-viewport">
     <div id="virtual-board" class="theme-neon-purple"></div>
     <div id="pause-symbol">⏸️</div>
+    <div id="recording-indicator">⏺️ ভিডিও রেকর্ড হচ্ছে...</div>
   </div>
 
-  <!-- Floating Selection Toolbar -->
+  <!-- ফ্লোটিং এডিট বার -->
   <div id="item-quick-toolbar">
     <button class="quick-btn" onclick="editSelectedItem()">✏️ এডিট</button>
     <button class="quick-btn" onclick="toggleItemUnderline()"><u>U</u> আন্ডারলাইন</button>
@@ -579,7 +630,7 @@
     <button class="quick-btn delete" onclick="deleteSelectedItem()">🗑️ ডিলিট</button>
   </div>
 
-  <!-- 4. Bottom Control Dock -->
+  <!-- ৪. বটম ডক -->
   <div id="bottom-dock">
     <div class="tool-tabs">
       <button class="tab-btn active" onclick="switchTab('text-panel')">✍️ নিওন টেক্সট ও আন্ডারলাইন</button>
@@ -594,7 +645,7 @@
     <div class="panels-container">
       <div id="text-panel" class="tab-panel active">
         <div class="control-group">
-          <input type="text" id="text-input" placeholder="বাংলায় লিখুন..." style="width: 140px;">
+          <textarea id="text-input" class="styled-text-input" placeholder="বাংলায় বড় বাক্য বা অনুচ্ছেদ লিখুন..."></textarea>
           <button class="btn-action" onclick="addTextItem()">+ টেক্সট যোগ</button>
         </div>
 
@@ -618,10 +669,11 @@
         <div class="control-group">
           <span class="control-label">সাইজ:</span>
           <select id="font-size-select">
-            <option value="44">ছোট</option>
-            <option value="66" selected>মাঝারি</option>
-            <option value="96">বড়</option>
-            <option value="130">বিশাল</option>
+            <option value="38">খুব ছোট</option>
+            <option value="48">ছোট</option>
+            <option value="64" selected>মাঝারি</option>
+            <option value="88">বড়</option>
+            <option value="120">বিশাল</option>
           </select>
         </div>
 
@@ -702,7 +754,6 @@
     </div>
   </div>
 
-  <!-- 5. Fullscreen Presentation Touch Controller -->
   <div id="presentation-tap-area"></div>
 
 </div>
@@ -742,11 +793,17 @@
   let presentationTimer = null;
   const STEP_DELAY_MS = 2400;
 
+  // Video Export Engine State
+  let isVideoRecording = false;
+  let mediaRecorderInstance = null;
+  let videoChunks = [];
+
   const viewport = document.getElementById('canvas-viewport');
   const board = document.getElementById('virtual-board');
   const quickToolbar = document.getElementById('item-quick-toolbar');
   const pauseSymbol = document.getElementById('pause-symbol');
   const slidesListContainer = document.getElementById('slides-list');
+  const recordingIndicator = document.getElementById('recording-indicator');
 
   function getCurrentSlideItems() {
     return slides[currentSlideIndex].items;
@@ -853,10 +910,20 @@
     board.classList.add(currentTheme);
   }
 
+  /* Audio Synthesis (Chimes) */
   let audioCtx = null;
+  let audioDestinationNode = null;
+
+  function initAudioContext() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      audioDestinationNode = audioCtx.createMediaStreamDestination();
+    }
+  }
+
   function playKidChime(toneType = 'standard') {
     try {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      initAudioContext();
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       
@@ -870,6 +937,7 @@
         gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
+        if (audioDestinationNode) gain.connect(audioDestinationNode);
         osc.start();
         osc.stop(audioCtx.currentTime + 0.65);
       } else {
@@ -880,6 +948,7 @@
         gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.28);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
+        if (audioDestinationNode) gain.connect(audioDestinationNode);
         osc.start();
         osc.stop(audioCtx.currentTime + 0.3);
       }
@@ -900,11 +969,18 @@
     }
   }
 
+  /* অটো-র‌্যাপ সহ টেক্সট যোগ */
   function addTextItem() {
     const input = document.getElementById('text-input');
     const text = input.value.trim() || "সুন্দর বাংলা ব্যাকরণ";
+    let size = parseInt(document.getElementById('font-size-select').value, 10);
     const font = document.getElementById('font-family-select').value;
-    const size = parseInt(document.getElementById('font-size-select').value, 10);
+
+    if (text.length > 70 && size > 64) {
+      size = 54;
+    } else if (text.length > 150 && size > 48) {
+      size = 44;
+    }
 
     const items = getCurrentSlideItems();
     const item = {
@@ -916,8 +992,8 @@
       color: activeTextPresetColor,
       bgColor: activeTextBgColor,
       underline: isUnderlinePresetActive,
-      x: 400,
-      y: 200 + (items.length % 5) * 80,
+      x: 350,
+      y: 180 + (items.length % 5) * 80,
       width: 'auto',
       height: 'auto',
       scale: 1,
@@ -1304,7 +1380,7 @@
         type: 'flow_node',
         nodeType: 'subbranch',
         title: 'প্রধান ভাগসমূহ',
-        desc: '• মুখ্য কর্তা (ছেলেটি পড়ে)\\n• প্রযোজক কর্তা (মা শিশুকে খাওয়াচ্ছেন)\\n• ব্যতিহার কর্তা (বাঘে-মহিষে লড়াই)',
+        desc: '• মুখ্য কর্তা (ছেলেটি পড়ে)\n• প্রযোজক কর্তা (মা শিশুকে খাওয়াচ্ছেন)\n• ব্যতিহার কর্তা (বাঘে-মহিষে লড়াই)',
         width: 480,
         height: 'auto',
         scale: 1,
@@ -1332,7 +1408,7 @@
         type: 'flow_node',
         nodeType: 'subbranch',
         title: 'প্রধান ভাগসমূহ',
-        desc: '• মুখ্য কর্ম (বাবা আমাকে কলম দিলেন)\\n• গৌণ কর্ম (আমাকে)\\n• সমধাতুজ কর্ম (বেশ এক ঘুম ঘুমিয়েছি)',
+        desc: '• মুখ্য কর্ম (বাবা আমাকে কলম দিলেন)\n• গৌণ কর্ম (আমাকে)\n• সমধাতুজ কর্ম (বেশ এক ঘুম ঘুমিয়েছি)',
         width: 480,
         height: 'auto',
         scale: 1,
@@ -1487,9 +1563,9 @@
         </div>`;
     } else if (item.type === 'expert_qa') {
       el.innerHTML += `
-        <div style="background:rgba(23, 10, 48, 0.95); border:4px solid #8b5cf6; border-radius:24px; padding:24px; box-shadow:0 0 35px rgba(139, 92, 246, 0.4);">
+        <div style="background:rgba(23, 10, 48, 0.95); border:4px solid #8b5cf6; border-radius:24px; padding:24px; box-shadow:0 0 35px rgba(139, 92, 246, 0.4); max-width:650px; word-break:break-word;">
           <div style="color:#f43f5e; font-size:28px; font-weight:bold;">প্রশ্ন:</div>
-          <div style="color:#f8fafc; font-size:38px; font-weight:bold; margin:8px 0 14px 0;">${item.question}</div>
+          <div style="color:#f8fafc; font-size:36px; font-weight:bold; margin:8px 0 14px 0; line-height:1.35;">${item.question}</div>
           <div style="background:rgba(6, 78, 59, 0.85); padding:14px; border-radius:12px; border-left:6px solid #10b981; color:#34d399; font-size:30px; font-weight:bold;">
             💡 উত্তর: ${item.answer}
           </div>
@@ -1502,8 +1578,8 @@
         </div>`;
     } else if (item.type === 'expert_blank') {
       el.innerHTML += `
-        <div style="background:rgba(15, 23, 42, 0.95); border:4px dashed #06b6d4; border-radius:24px; padding:26px; text-align:center; box-shadow:0 0 30px rgba(6, 182, 212, 0.35);">
-          <div style="font-size:42px; color:#f8fafc; font-weight:bold;">${item.text}</div>
+        <div style="background:rgba(15, 23, 42, 0.95); border:4px dashed #06b6d4; border-radius:24px; padding:26px; text-align:center; box-shadow:0 0 30px rgba(6, 182, 212, 0.35); max-width:650px; word-break:break-word;">
+          <div style="font-size:38px; color:#f8fafc; font-weight:bold; line-height:1.35;">${item.text}</div>
           <div style="margin-top:14px; display:inline-block; background:#0891b2; color:#fff; padding:6px 24px; border-radius:14px; font-size:32px; font-weight:bold;">
             উত্তর: ${item.answer}
           </div>
@@ -1718,7 +1794,7 @@
     if (el && board.firstChild) board.insertBefore(el, board.firstChild);
   }
 
-  /* Audio Recorder */
+  /* অডিও রেকর্ডিং */
   let mediaRecorder = null;
   let audioChunks = [];
 
@@ -1817,14 +1893,14 @@
     items.forEach((item) => {
       const chip = document.createElement('div');
       chip.style.cssText = `padding: 5px 11px; background: #190c3d; border:1px solid #4c1d95; border-radius: 20px; font-size: 12px; white-space: nowrap; cursor: pointer; color:#c4b5fd;`;
-      let label = item.type === 'text' ? item.content.slice(0, 10) + '...' : (item.label || item.title || item.type);
+      let label = item.type === 'text' ? item.content.slice(0, 12) + '...' : (item.label || item.title || item.type);
       chip.innerHTML = `<strong>#${item.step}</strong> ${label}`;
       chip.onclick = () => selectItem(item.id);
       cont.appendChild(chip);
     });
   }
 
-  /* Presentation Engine & Touch Gestures */
+  /* প্রেজেন্টেশন ইঞ্জিন */
   function checkOrientationPresentation() {
     const isLandscape = window.innerWidth > window.innerHeight;
     if (isLandscape && !isPresenting) {
@@ -1868,6 +1944,9 @@
 
   function loadSlideForPresentation(sIndex, useFade = true) {
     if (sIndex >= slides.length) {
+      if (isVideoRecording) {
+        finishVideoRecording();
+      }
       return;
     }
 
@@ -1925,7 +2004,16 @@
         }
 
         if (item.audioData) {
-          new Audio(item.audioData).play().catch(()=>{});
+          try {
+            initAudioContext();
+            const snd = new Audio(item.audioData);
+            const source = audioCtx.createMediaElementSource(snd);
+            source.connect(audioCtx.destination);
+            if (audioDestinationNode) source.connect(audioDestinationNode);
+            snd.play().catch(()=>{});
+          } catch(e) {
+            new Audio(item.audioData).play().catch(()=>{});
+          }
         }
       }
 
@@ -1936,16 +2024,20 @@
         presentationTimer = setTimeout(() => {
           loadSlideForPresentation(presSlideIndex + 1, true);
         }, 1200);
+      } else {
+        if (isVideoRecording) {
+          setTimeout(finishVideoRecording, 1500);
+        }
       }
     }
   }
 
-  /* Touch Gestures: Single Tap = Pause, Double Tap = Exit */
+  /* টাচ কন্ট্রোলস */
   let lastTapTime = 0;
   const tapArea = document.getElementById('presentation-tap-area');
 
   tapArea.addEventListener('click', (e) => {
-    if (!isPresenting) return;
+    if (!isPresenting || isVideoRecording) return;
     const currentTime = new Date().getTime();
     const tapLength = currentTime - lastTapTime;
 
@@ -1972,6 +2064,10 @@
     pauseSymbol.style.display = 'none';
     board.style.opacity = '1';
 
+    if (isVideoRecording) {
+      finishVideoRecording();
+    }
+
     document.body.classList.remove('presenting-override');
 
     if (shouldPopHistory && history.state && history.state.inPresentation) {
@@ -1981,7 +2077,146 @@
     switchSlide(currentSlideIndex);
   }
 
-  /* Persistence */
+  /* ========================================================
+     🎥 HIGH DEFINITION 1080P MP4/WEBM VIDEO RECORDER ENGINE
+     ======================================================== */
+  async function exportPresentationAsVideo() {
+    const hasItems = slides.some(s => s.items.length > 0);
+    if (!hasItems) {
+      alert("ভিডিও তৈরির জন্য বোর্ডে অন্তত কিছু উপাদান থাকতে হবে!");
+      return;
+    }
+
+    if (!confirm("আপনি কি সম্পূর্ণ প্রেজেন্টেশনটি HD ভিডিও হিসেবে রেকর্ড ও ডাউনলোড করতে চান? প্রেজেন্টেশন চলাকালীন স্ক্রিন বন্ধ করবেন না।")) return;
+
+    initAudioContext();
+
+    const recCanvas = document.createElement('canvas');
+    recCanvas.width = NATIVE_WIDTH;
+    recCanvas.height = NATIVE_HEIGHT;
+    const recCtx = recCanvas.getContext('2d');
+
+    const canvasStream = recCanvas.captureStream(30);
+
+    const mergedStream = new MediaStream([
+      ...canvasStream.getVideoTracks(),
+      ...audioDestinationNode.stream.getAudioTracks()
+    ]);
+
+    let selectedMime = 'video/webm;codecs=vp9,opus';
+    if (MediaRecorder.isTypeSupported('video/mp4;codecs=avc1,mp4a.40.2')) {
+      selectedMime = 'video/mp4;codecs=avc1,mp4a.40.2';
+    } else if (MediaRecorder.isTypeSupported('video/mp4')) {
+      selectedMime = 'video/mp4';
+    } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) {
+      selectedMime = 'video/webm;codecs=vp8,opus';
+    }
+
+    videoChunks = [];
+    try {
+      mediaRecorderInstance = new MediaRecorder(mergedStream, {
+        mimeType: selectedMime,
+        videoBitsPerSecond: 5000000
+      });
+    } catch(e) {
+      mediaRecorderInstance = new MediaRecorder(mergedStream);
+    }
+
+    mediaRecorderInstance.ondataavailable = (e) => {
+      if (e.data.size > 0) videoChunks.push(e.data);
+    };
+
+    mediaRecorderInstance.onstop = () => {
+      const ext = selectedMime.includes('mp4') ? 'mp4' : 'webm';
+      const videoBlob = new Blob(videoChunks, { type: selectedMime });
+      const downloadUrl = URL.createObjectURL(videoBlob);
+
+      const downloadLink = document.createElement('a');
+      downloadLink.href = downloadUrl;
+      downloadLink.download = `Aimanix_Presentation_${Date.now()}.${ext}`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      URL.revokeObjectURL(downloadUrl);
+
+      recordingIndicator.style.display = 'none';
+      isVideoRecording = false;
+      alert("🎉 আপনার প্রেজেন্টেশন ভিডিও সফলভাবে ডাউনলোড হয়েছে!");
+    };
+
+    function renderBoardToCanvas() {
+      if (!isVideoRecording) return;
+      
+      if (currentTheme === 'theme-neon-purple') {
+        const grad = recCtx.createRadialGradient(960, 540, 10, 960, 540, 960);
+        grad.addColorStop(0, '#1e0b3d');
+        grad.addColorStop(0.65, '#0d0221');
+        grad.addColorStop(1, '#05000e');
+        recCtx.fillStyle = grad;
+        recCtx.fillRect(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT);
+      } else if (currentTheme === 'theme-chalkboard') {
+        recCtx.fillStyle = '#153327';
+        recCtx.fillRect(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT);
+      } else {
+        recCtx.fillStyle = '#ffffff';
+        recCtx.fillRect(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT);
+      }
+
+      const curSlide = slides[presSlideIndex];
+      if (curSlide) {
+        for (let i = 0; i < presStepIndex; i++) {
+          const item = curSlide.items[i];
+          if (!item) continue;
+          
+          recCtx.save();
+          recCtx.translate(item.x, item.y);
+          recCtx.scale(item.scale || 1, item.scale || 1);
+          recCtx.rotate(((item.rotation || 0) * Math.PI) / 180);
+
+          if (item.type === 'text') {
+            recCtx.font = `bold ${item.fontSize}px 'Hind Siliguri', sans-serif`;
+            const textMetrics = recCtx.measureText(item.content);
+            const textW = Math.min(textMetrics.width, 1400);
+
+            if (item.bgColor && item.bgColor !== 'transparent') {
+              recCtx.fillStyle = item.bgColor;
+              recCtx.fillRect(-10, -item.fontSize, textW + 20, item.fontSize + 20);
+            }
+
+            recCtx.fillStyle = item.color;
+            recCtx.fillText(item.content, 0, 0);
+
+            if (item.underline) {
+              recCtx.strokeStyle = item.color;
+              recCtx.lineWidth = 4;
+              recCtx.beginPath();
+              recCtx.moveTo(0, 8);
+              recCtx.lineTo(textW, 8);
+              recCtx.stroke();
+            }
+          }
+          recCtx.restore();
+        }
+      }
+
+      requestAnimationFrame(renderBoardToCanvas);
+    }
+
+    isVideoRecording = true;
+    recordingIndicator.style.display = 'flex';
+    mediaRecorderInstance.start();
+    requestAnimationFrame(renderBoardToCanvas);
+
+    startPresentation();
+  }
+
+  function finishVideoRecording() {
+    if (mediaRecorderInstance && mediaRecorderInstance.state !== 'inactive') {
+      mediaRecorderInstance.stop();
+    }
+  }
+
+  /* লোকাল স্টোরেজ */
   function saveToStorage() {
     localStorage.setItem('school_neon_multislide_data', JSON.stringify(slides));
     alert("আপনার সকল স্লাইড ও ডায়াগ্রাম ডিভাইসে সেভ হয়েছে!");
