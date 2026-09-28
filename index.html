@@ -3,30 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Smart Presentation Board</title>
+  <title>Aimanix Smart Kids Presentation Studio</title>
   
-  <!-- PWA Manifest & Meta Links -->
   <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#8b5cf6">
+  <meta name="theme-color" content="#12062b">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3247/3247414.png">
 
-  <!-- Google Fonts: Bengali Fonts -->
+  <!-- Premium Bengali Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Atma:wght@500;600;700&family=Galada&family=Hind+Siliguri:wght@400;600;700&family=Mina:wght@400;700&family=Noto+Sans+Bengali:wght@400;600;700&family=Tiro+Bangla&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Atma:wght@500;600;700&family=Galada&family=Hind+Siliguri:wght@400;500;600;700&family=Mina:wght@400;700&family=Noto+Sans+Bengali:wght@400;600;700&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
   
   <style>
     :root {
       --primary: #8b5cf6;
-      --accent: #06b6d4;
+      --primary-glow: rgba(139, 92, 246, 0.45);
+      --accent: #22d3ee;
+      --accent-glow: rgba(34, 211, 238, 0.4);
+      --gold: #facc15;
+      --gold-glow: rgba(250, 204, 21, 0.45);
+      --rose: #f43f5e;
       --bg-dark: #070314;
-      --panel-bg: #110926;
-      --panel-border: #2d1854;
-      --neon-purple: #c084fc;
-      --neon-cyan: #22d3ee;
-      --neon-gold: #facc15;
+      --panel-bg: #12072e;
+      --panel-border: #2e155c;
+      --card-bg: rgba(20, 9, 48, 0.95);
     }
 
     * {
@@ -57,71 +59,82 @@
       overflow: hidden;
     }
 
-    /* 1. Top Bar */
+    /* 1. Header Navigation Bar */
     #top-bar {
-      flex: 0 0 46px;
-      height: 46px;
-      background: var(--panel-bg);
+      flex: 0 0 50px;
+      height: 50px;
+      background: linear-gradient(90deg, #130630, #1c0a45);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 8px;
+      padding: 0 10px;
       border-bottom: 1px solid var(--panel-border);
-      z-index: 50;
-      box-shadow: 0 2px 12px rgba(139, 92, 246, 0.2);
+      z-index: 60;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.5);
     }
 
-    .app-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--neon-cyan);
+    .app-brand {
       display: flex;
       align-items: center;
-      gap: 5px;
-      text-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+      gap: 7px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+      text-shadow: 0 0 10px var(--accent-glow);
       white-space: nowrap;
     }
 
-    .top-actions { display: flex; gap: 5px; }
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
 
     .btn-sm {
-      padding: 4px 8px;
-      font-size: 11px;
+      padding: 6px 11px;
+      font-size: 12px;
       font-weight: 600;
-      border-radius: 8px;
+      border-radius: 9px;
       border: none;
       cursor: pointer;
       font-family: inherit;
       display: flex;
       align-items: center;
-      gap: 3px;
+      gap: 4px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .btn-theme { background: #581c87; color: #f3e8ff; border: 1px solid #a855f7; }
-    .btn-save { background: #059669; color: #fff; }
-    .btn-install { background: #0284c7; color: #fff; display: none; }
-    .btn-play-preview { background: #facc15; color: #000; font-weight: 700; }
-    .btn-clear { background: #dc2626; color: #fff; }
+    .btn-sm:active { transform: scale(0.94); }
+    .btn-theme { background: #4c1d95; color: #ede9fe; border: 1px solid #7c3aed; }
+    .btn-save { background: #059669; color: #fff; border: 1px solid #10b981; }
+    .btn-play-preview { 
+      background: linear-gradient(135deg, #facc15, #f59e0b); 
+      color: #070314; 
+      font-weight: 700; 
+      box-shadow: 0 0 12px var(--gold-glow);
+    }
+    .btn-clear { background: #991b1b; color: #fee2e2; }
 
     /* 2. Slide Navigation Strip */
     #slide-strip {
-      flex: 0 0 44px;
-      background: #09031a;
+      flex: 0 0 46px;
+      height: 46px;
+      background: #0b021d;
       border-bottom: 1px solid var(--panel-border);
       display: flex;
       align-items: center;
-      padding: 0 8px;
+      padding: 0 10px;
       gap: 8px;
       overflow-x: auto;
       scrollbar-width: none;
       -webkit-overflow-scrolling: touch;
-      z-index: 45;
+      z-index: 55;
     }
     #slide-strip::-webkit-scrollbar { display: none; }
 
     .slide-chip {
-      padding: 5px 12px;
-      background: #190e38;
-      border: 1px solid #4c1d95;
+      padding: 5px 13px;
+      background: #1b0c3f;
+      border: 1px solid #431a80;
       border-radius: 20px;
       font-size: 12px;
       font-weight: 600;
@@ -131,28 +144,30 @@
       align-items: center;
       gap: 6px;
       color: #c4b5fd;
+      transition: all 0.2s ease;
     }
     .slide-chip.active {
       background: #7c3aed;
       color: #fff;
       border-color: #c084fc;
-      box-shadow: 0 0 10px rgba(192, 132, 252, 0.5);
+      box-shadow: 0 0 14px rgba(192, 132, 252, 0.55);
     }
 
     .btn-add-slide {
       background: #059669;
       color: #fff;
-      border: none;
-      padding: 5px 12px;
+      border: 1px solid #34d399;
+      padding: 6px 14px;
       border-radius: 20px;
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
       white-space: nowrap;
       flex-shrink: 0;
+      box-shadow: 0 0 12px rgba(5, 150, 105, 0.4);
     }
 
     /* 3. Canvas Viewport */
@@ -164,12 +179,12 @@
       align-items: center;
       justify-content: center;
       position: relative;
-      background: #060112;
+      background: #05010e;
       overflow: hidden;
       touch-action: none;
     }
 
-    /* 16:9 Virtual Board */
+    /* Virtual Board (1920x1080 Native) */
     #virtual-board {
       width: 1920px;
       height: 1080px;
@@ -177,31 +192,33 @@
       transform-origin: center center;
       border-radius: 14px;
       overflow: hidden;
-      transition: opacity 0.45s ease-in-out;
+      transition: opacity 0.4s ease-in-out;
       opacity: 1;
+    }
+
+    #virtual-board.theme-neon-purple {
+      background: radial-gradient(circle at center, #1e0b3d 0%, #0d0221 65%, #05000e 100%) !important;
+      border: 4px solid #9333ea;
+      box-shadow: 0 0 50px rgba(147, 51, 234, 0.45), inset 0 0 70px rgba(34, 211, 238, 0.2) !important;
+      color: #ffffff;
+    }
+
+    #virtual-board.theme-chalkboard {
+      background: #153327 !important;
+      background-image: radial-gradient(circle, #255442 12%, #112d22 90%) !important;
+      color: #f8fafc;
+      border: 4px solid #3d7a63;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
     }
 
     #virtual-board.theme-white {
       background: #ffffff !important;
       color: #0f172a;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      border: 4px solid #cbd5e1;
     }
 
-    #virtual-board.theme-neon-purple {
-      background: radial-gradient(circle at center, #1e0b3d 0%, #0c021f 65%, #05000e 100%) !important;
-      border: 4px solid #a855f7;
-      box-shadow: 0 0 50px rgba(168, 85, 247, 0.5), inset 0 0 60px rgba(34, 211, 238, 0.25) !important;
-      color: #ffffff;
-    }
-
-    #virtual-board.theme-chalkboard {
-      background: #1e3a2f !important;
-      background-image: radial-gradient(circle, #2d5a49 10%, #173227 90%) !important;
-      color: #f1f5f9;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-    }
-
-    /* Board Items (Fully scalable with Pinch) */
+    /* Board Items */
     .board-item {
       position: absolute;
       touch-action: none;
@@ -212,23 +229,23 @@
 
     .board-item.selected {
       outline: 4px dashed #38bdf8;
-      outline-offset: 4px;
+      outline-offset: 6px;
       z-index: 999 !important;
     }
 
     .resize-handle {
       position: absolute;
-      width: 48px;
-      height: 48px;
+      width: 52px;
+      height: 52px;
       background: #38bdf8;
-      border: 3px solid #fff;
+      border: 4px solid #fff;
       border-radius: 50%;
-      bottom: -22px;
-      right: -22px;
+      bottom: -24px;
+      right: -24px;
       cursor: nwse-resize;
       display: none;
       z-index: 1001;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.55);
     }
     .board-item.selected .resize-handle {
       display: block;
@@ -238,17 +255,17 @@
       position: absolute;
       top: -24px;
       left: -24px;
-      background: #ec4899;
+      background: var(--rose);
       color: white;
       font-size: 22px;
-      font-weight: bold;
-      width: 44px;
-      height: 44px;
+      font-weight: 800;
+      width: 46px;
+      height: 46px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 15px rgba(236, 72, 153, 0.8);
+      box-shadow: 0 0 15px rgba(244, 63, 94, 0.8);
       border: 3px solid #fff;
       pointer-events: none;
       z-index: 1002;
@@ -258,11 +275,11 @@
       white-space: pre-wrap;
       word-break: break-word;
       line-height: 1.35;
-      padding: 10px 18px;
+      padding: 10px 20px;
       border-radius: 14px;
       display: inline-block;
       text-decoration-thickness: 4px;
-      text-underline-offset: 6px;
+      text-underline-offset: 7px;
     }
 
     .item-image {
@@ -274,31 +291,32 @@
       border-radius: 12px;
     }
 
+    /* Flowchart / Tree Nodes */
     .flow-node {
-      border-radius: 18px;
-      padding: 16px 28px;
+      border-radius: 20px;
+      padding: 18px 30px;
       text-align: center;
       font-weight: 700;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
       border: 4px solid;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: rgba(18, 8, 38, 0.92);
-      backdrop-filter: blur(8px);
+      background: rgba(18, 7, 40, 0.94);
+      backdrop-filter: blur(10px);
     }
     .flow-node.root {
       border-color: #38bdf8;
       color: #38bdf8;
       font-size: 46px;
-      box-shadow: 0 0 25px rgba(56, 189, 248, 0.4);
+      box-shadow: 0 0 30px rgba(56, 189, 248, 0.4);
     }
     .flow-node.branch {
       border-color: #facc15;
       color: #facc15;
       font-size: 38px;
-      box-shadow: 0 0 20px rgba(250, 204, 21, 0.35);
+      box-shadow: 0 0 25px rgba(250, 204, 21, 0.35);
     }
     .flow-node.subbranch {
       border-color: #ec4899;
@@ -307,23 +325,59 @@
       box-shadow: 0 0 20px rgba(236, 72, 153, 0.35);
     }
 
-    /* 4. Bottom Dock */
+    /* Floating Item Mini Toolbar */
+    #item-quick-toolbar {
+      position: absolute;
+      top: 106px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(18, 7, 42, 0.95);
+      padding: 6px 14px;
+      border-radius: 30px;
+      display: none;
+      align-items: center;
+      gap: 7px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.85);
+      border: 1px solid var(--primary);
+      z-index: 40;
+      overflow-x: auto;
+      max-width: 95vw;
+    }
+    .quick-btn {
+      background: none;
+      border: none;
+      color: #f8fafc;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-family: inherit;
+      white-space: nowrap;
+      padding: 4px 6px;
+      border-radius: 6px;
+    }
+    .quick-btn:active { background: rgba(255,255,255,0.1); }
+    .quick-btn.delete { color: #f87171; }
+
+    /* 4. Bottom Control Panel */
     #bottom-dock {
       flex: 0 0 auto;
-      max-height: 38vh;
+      max-height: 40vh;
       background: var(--panel-bg);
       border-top: 1px solid var(--panel-border);
       display: flex;
       flex-direction: column;
-      z-index: 100;
-      padding-bottom: env(safe-area-inset-bottom, 6px);
-      box-shadow: 0 -4px 20px rgba(0,0,0,0.6);
+      z-index: 50;
+      padding-bottom: env(safe-area-inset-bottom, 8px);
+      box-shadow: 0 -4px 25px rgba(0,0,0,0.6);
     }
 
     .tool-tabs {
       display: flex;
       overflow-x: auto;
-      background: #09031a;
+      background: #090218;
       border-bottom: 1px solid var(--panel-border);
       scrollbar-width: none;
       -webkit-overflow-scrolling: touch;
@@ -332,34 +386,35 @@
     .tool-tabs::-webkit-scrollbar { display: none; }
 
     .tab-btn {
-      padding: 8px 12px;
+      padding: 9px 13px;
       background: transparent;
       border: none;
       color: #c4b5fd;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
       font-family: inherit;
       border-bottom: 3px solid transparent;
+      transition: all 0.2s ease;
     }
     .tab-btn.active {
-      color: var(--neon-cyan);
-      border-bottom-color: var(--neon-cyan);
-      background: rgba(34, 211, 238, 0.1);
-      text-shadow: 0 0 8px rgba(34, 211, 238, 0.5);
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      background: rgba(34, 211, 238, 0.08);
+      text-shadow: 0 0 10px var(--accent-glow);
     }
 
     .panels-container {
       overflow-y: auto;
-      max-height: calc(38vh - 36px);
+      max-height: calc(40vh - 38px);
       -webkit-overflow-scrolling: touch;
     }
 
     .tab-panel {
-      padding: 9px;
+      padding: 10px 12px;
       display: none;
-      gap: 7px;
+      gap: 8px;
       align-items: center;
       flex-wrap: wrap;
     }
@@ -372,13 +427,13 @@
     }
     .control-label {
       font-size: 12px;
-      color: #e2e8f0;
+      color: #cbd5e1;
       font-weight: 500;
     }
 
     select, input[type="text"] {
-      padding: 6px 8px;
-      background: #09031a;
+      padding: 6px 9px;
+      background: #090218;
       border: 1px solid #4c1d95;
       border-radius: 8px;
       color: #f8fafc;
@@ -400,75 +455,31 @@
       gap: 4px;
       font-family: inherit;
       font-size: 12px;
+      transition: all 0.15s ease;
     }
-    .btn-action:active { transform: scale(0.96); }
+    .btn-action:active { transform: scale(0.95); }
 
     .btn-toggle-active {
       background: #facc15 !important;
-      color: #000 !important;
+      color: #070314 !important;
       font-weight: 700;
+      box-shadow: 0 0 10px var(--gold-glow);
     }
 
     .color-swatch-list { display: flex; gap: 5px; align-items: center; }
     .color-swatch {
-      width: 22px;
-      height: 22px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
       cursor: pointer;
       border: 2px solid #fff;
+      transition: transform 0.15s ease;
     }
+    .color-swatch:active { transform: scale(1.15); }
 
-    /* Floating Item Toolbar */
-    #item-quick-toolbar {
-      position: absolute;
-      top: 54px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(17, 9, 38, 0.95);
-      padding: 5px 12px;
-      border-radius: 30px;
-      display: none;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.7);
-      border: 1px solid #6d28d9;
-      z-index: 150;
-      overflow-x: auto;
-      max-width: 94vw;
-    }
-    .quick-btn {
-      background: none;
-      border: none;
-      color: #f8fafc;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 3px;
-      font-family: inherit;
-      white-space: nowrap;
-    }
-    .quick-btn.delete { color: #f87171; }
-
-    /* Presentation Overlays */
-    #presentation-hud {
-      display: none;
-      position: absolute;
-      top: 18px;
-      right: 22px;
-      z-index: 2000;
-      background: rgba(17, 9, 38, 0.75);
-      padding: 6px 14px;
-      border-radius: 30px;
-      color: #e2e8f0;
-      font-size: 13px;
-      font-weight: 600;
-      pointer-events: none;
-      border: 1px solid rgba(139, 92, 246, 0.3);
-      backdrop-filter: blur(4px);
-    }
-
+    /* ========================================================
+       5. Clean Presentation Mode
+       ======================================================== */
     #presentation-tap-area {
       display: none;
       position: absolute;
@@ -484,7 +495,7 @@
     @media (orientation: landscape) {
       #top-bar, #slide-strip, #bottom-dock, #item-quick-toolbar { display: none !important; }
       #canvas-viewport { padding: 0 !important; background: #000000; }
-      #presentation-hud, #presentation-tap-area { display: block; }
+      #presentation-tap-area { display: block !important; }
       .board-item { cursor: default !important; outline: none !important; }
       .step-badge, .resize-handle { display: none !important; }
     }
@@ -493,7 +504,6 @@
     body.presenting-override #slide-strip,
     body.presenting-override #bottom-dock, 
     body.presenting-override #item-quick-toolbar { display: none !important; }
-    body.presenting-override #presentation-hud, 
     body.presenting-override #presentation-tap-area { display: block !important; }
     body.presenting-override .step-badge,
     body.presenting-override .resize-handle { display: none !important; }
@@ -529,14 +539,13 @@
 
 <div id="app-container">
   
-  <!-- 1. Top Bar -->
+  <!-- 1. Header Toolbar -->
   <div id="top-bar">
-    <div class="app-title">
+    <div class="app-brand">
       <span>🏫</span>
-      <span>নিওন প্রেজেন্টার</span>
+      <span>কিডস প্রেজেন্টার প্রো</span>
     </div>
     <div class="top-actions">
-      <button class="btn-sm btn-install" id="pwa-install-btn" onclick="installPWA()">📲 অ্যাপ ইনস্টল</button>
       <button class="btn-sm btn-theme" onclick="cycleBoardTheme()">🎨 নিওন থিম</button>
       <button class="btn-sm btn-clear" onclick="clearCurrentSlide()">🗑️ সাফ</button>
       <button class="btn-sm btn-save" onclick="saveToStorage()">💾 সেভ</button>
@@ -546,9 +555,9 @@
 
   <!-- 2. Slides Bar Strip -->
   <div id="slide-strip">
-    <div id="slides-list" style="display:flex; gap:6px;"></div>
     <button class="btn-add-slide" onclick="addNewSlide()">+ নতুন বোর্ড</button>
-    <button class="btn-sm" style="background:#4c1d95; color:#fff; border-radius:20px" onclick="duplicateCurrentSlide()">📋 কপি</button>
+    <div id="slides-list" style="display:flex; gap:6px;"></div>
+    <button class="btn-sm" style="background:#3b0764; color:#d8b4fe; border-radius:20px" onclick="duplicateCurrentSlide()">📋 কপি</button>
     <button class="btn-sm" style="background:#7f1d1d; color:#fca5a5; border-radius:20px" onclick="deleteCurrentSlide()">❌ মুছুন</button>
   </div>
 
@@ -570,12 +579,12 @@
     <button class="quick-btn delete" onclick="deleteSelectedItem()">🗑️ ডিলিট</button>
   </div>
 
-  <!-- 4. Bottom Tool Dock -->
+  <!-- 4. Bottom Control Dock -->
   <div id="bottom-dock">
     <div class="tool-tabs">
       <button class="tab-btn active" onclick="switchTab('text-panel')">✍️ নিওন টেক্সট ও আন্ডারলাইন</button>
       <button class="tab-btn" onclick="switchTab('shape-panel')">🔷 জ্যামিতিক আকার (বর্গসহ)</button>
-      <button class="tab-btn" onclick="switchTab('flowchart-panel')">🌳 ব্যাকরণ/ফ্লোচার্ট</button>
+      <button class="tab-btn" onclick="switchTab('flowchart-panel')">🌳 ব্যাকরণ ও ফ্লোচার্ট</button>
       <button class="tab-btn" onclick="switchTab('pointer-panel')">🏹 অ্যারো ও পয়েন্টার</button>
       <button class="tab-btn" onclick="switchTab('media-panel')">🖼️ ছবি ও অডিও</button>
       <button class="tab-btn" onclick="switchTab('expert-panel')">🎓 শিক্ষক টুলস ও কুইজ</button>
@@ -583,15 +592,13 @@
     </div>
 
     <div class="panels-container">
-      <!-- Tab 1: Text, Underline & Colors -->
       <div id="text-panel" class="tab-panel active">
         <div class="control-group">
-          <input type="text" id="text-input" placeholder="বাংলায় লিখুন..." style="width: 135px;">
+          <input type="text" id="text-input" placeholder="বাংলায় লিখুন..." style="width: 140px;">
           <button class="btn-action" onclick="addTextItem()">+ টেক্সট যোগ</button>
         </div>
 
         <div class="control-group">
-          <!-- Text Underline Feature -->
           <button class="btn-action" id="btn-underline-toggle" onclick="toggleUnderlinePreset()">
             <u>U</u> আন্ডারলাইন রেখা
           </button>
@@ -599,7 +606,7 @@
 
         <div class="control-group">
           <span class="control-label">ফন্ট:</span>
-          <select id="font-family-select" style="max-width: 125px;">
+          <select id="font-family-select" style="max-width: 130px;">
             <option value="'Hind Siliguri', sans-serif">হিন্দ শিলিগুড়ি</option>
             <option value="'Galada', cursive">গালাদা (আর্ট)</option>
             <option value="'Atma', cursive">আত্মা (বাচ্চাদের)</option>
@@ -618,7 +625,6 @@
           </select>
         </div>
 
-        <!-- Poster-like Neon Text Colors -->
         <div class="control-group">
           <span class="control-label">নিওন টেক্সট রং:</span>
           <div class="color-swatch-list">
@@ -631,7 +637,6 @@
           </div>
         </div>
 
-        <!-- Poster-like Text Ribbon / Backgrounds -->
         <div class="control-group">
           <span class="control-label">টেক্সট ব্যাকগ্রাউন্ড:</span>
           <div class="color-swatch-list">
@@ -645,7 +650,6 @@
         </div>
       </div>
 
-      <!-- Tab 2: Shapes & Angles -->
       <div id="shape-panel" class="tab-panel">
         <button class="btn-action" onclick="addShapeItem('square')">⏹️ বর্গাকার (Square)</button>
         <button class="btn-action" onclick="addShapeItem('triangle')">🔺 ত্রিভুজ (Triangle)</button>
@@ -656,7 +660,6 @@
         <button class="btn-action" onclick="addShapeItem('cylinder')">🛢️ সিলিন্ডার / চোঙ</button>
       </div>
 
-      <!-- Tab 3: Flowchart & Grammar Tree -->
       <div id="flowchart-panel" class="tab-panel">
         <button class="btn-action" style="background:#0284c7" onclick="loadKarakGrammarTree()">
           📚 কারকের নমুনা ট্রি লোড করুন
@@ -666,13 +669,11 @@
         <button class="btn-action" onclick="addCustomFlowNode('subbranch')">🍃 উপ-ভাগ (Sub-branch)</button>
       </div>
 
-      <!-- Tab 4: Arrow & Pointers -->
       <div id="pointer-panel" class="tab-panel">
         <button class="btn-action" onclick="addArrowItem('right')">➡️ ডান অ্যারো</button>
         <button class="btn-action" onclick="addArrowItem('down')">⬇️ নিচের অ্যারো</button>
         <button class="btn-action" onclick="addArrowItem('curved')">⤵️ বাঁকানো অ্যারো</button>
         <button class="btn-action" onclick="addArrowItem('double')">↔️ উভমুখী অ্যারো</button>
-        
         <button class="btn-action" onclick="addPointerIcon('👉')">👉 তর্জনী হাত</button>
         <button class="btn-action" onclick="addPointerIcon('👆')">👆 ঊর্ধ্বমুখী হাত</button>
         <button class="btn-action" onclick="addPointerIcon('🔍')">🔍 ম্যাগনিফায়ার</button>
@@ -680,16 +681,13 @@
         <button class="btn-action" onclick="addPointerIcon('🎯')">🎯 ফোকাস বৃত্ত</button>
       </div>
 
-      <!-- Tab 5: Media & Audio -->
       <div id="media-panel" class="tab-panel">
         <input type="file" id="image-file-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
         <button class="btn-action" onclick="document.getElementById('image-file-input').click()">📷 ছবি যোগ (Pinch Resize)</button>
-
         <input type="file" id="audio-file-input" accept="audio/*" style="display: none;" onchange="handleAudioUpload(event)">
-        <button class="btn-action" style="background: #0284c7;" onclick="document.getElementById('audio-file-input').click()">🎵 অডিও ফাইল যোগ</button>
+        <button class="btn-action" style="background:#0284c7;" onclick="document.getElementById('audio-file-input').click()">🎵 অডিও ফাইল যোগ</button>
       </div>
 
-      <!-- Tab 6: Teacher Tools -->
       <div id="expert-panel" class="tab-panel">
         <button class="btn-action" style="background:#e11d48" onclick="addHighlightBox()">🔲 হাইলাইট বক্স (Highlight)</button>
         <button class="btn-action" style="background:#f59e0b; color:#000;" onclick="addRewardBadge()">🏆 সাবাশ / পুরস্কার ব্যাজ</button>
@@ -697,7 +695,6 @@
         <button class="btn-action" style="background:#8b5cf6" onclick="addFillInBlankCard()">📝 শূন্যস্থান পূরণ</button>
       </div>
 
-      <!-- Tab 7: Steps -->
       <div id="steps-panel" class="tab-panel">
         <span class="control-label">বর্তমান বোর্ডের স্টেপ তালিকা:</span>
         <div id="steps-chip-container" style="display:flex; gap:6px; overflow-x:auto; width:100%;"></div>
@@ -705,50 +702,20 @@
     </div>
   </div>
 
-  <!-- Presentation HUD & Tap Detector -->
-  <div id="presentation-hud">
-    <span id="hud-status-text">চলছে (থামাতে টাচ করুন)</span>
-  </div>
-  <div id="presentation-tap-area" onclick="handlePresentationTap()"></div>
+  <!-- 5. Fullscreen Presentation Touch Controller -->
+  <div id="presentation-tap-area"></div>
 
 </div>
 
 <script>
-  /* ========================================================
-     PWA SERVICE WORKER REGISTRATION & INSTALL LOGIC
-     ======================================================== */
-  let deferredPrompt = null;
-  const pwaInstallBtn = document.getElementById('pwa-install-btn');
-
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js')
-        .then((reg) => console.log('SW Registered:', reg.scope))
-        .catch((err) => console.log('SW Registration failed:', err));
+        .then(reg => console.log('PWA ServiceWorker Active'))
+        .catch(err => console.log('SW Registration Note:', err));
     });
   }
 
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    pwaInstallBtn.style.display = 'flex'; // মোবাইল ব্রাউজারে ইনস্টল বাটন দৃশ্যমান হবে
-  });
-
-  function installPWA() {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          pwaInstallBtn.style.display = 'none';
-        }
-        deferredPrompt = null;
-      });
-    }
-  }
-
-  /* ========================================================
-     STATE MANAGEMENT
-     ======================================================== */
   const NATIVE_WIDTH = 1920;
   const NATIVE_HEIGHT = 1080;
   let canvasScale = 1;
@@ -766,20 +733,18 @@
   let selectedItemId = null;
   let activeTextPresetColor = '#facc15';
   let activeTextBgColor = 'transparent';
-  let isUnderlinePresetActive = false; // আন্ডারলাইন টগল ট্র্যাক
+  let isUnderlinePresetActive = false;
 
-  // Presentation State
   let isPresenting = false;
   let isPaused = false;
   let presSlideIndex = 0;
   let presStepIndex = 0;
   let presentationTimer = null;
-  const STEP_DELAY_MS = 2500;
+  const STEP_DELAY_MS = 2400;
 
   const viewport = document.getElementById('canvas-viewport');
   const board = document.getElementById('virtual-board');
   const quickToolbar = document.getElementById('item-quick-toolbar');
-  const hudStatus = document.getElementById('hud-status-text');
   const pauseSymbol = document.getElementById('pause-symbol');
   const slidesListContainer = document.getElementById('slides-list');
 
@@ -888,9 +853,6 @@
     board.classList.add(currentTheme);
   }
 
-  /* ========================================================
-     AUDIO SYNTHESIS
-     ======================================================== */
   let audioCtx = null;
   function playKidChime(toneType = 'standard') {
     try {
@@ -928,9 +890,6 @@
     return getCurrentSlideItems().length + 1;
   }
 
-  /* ========================================================
-     ELEMENT BUILDERS WITH UNDERLINE SUPPORT
-     ======================================================== */
   function toggleUnderlinePreset() {
     isUnderlinePresetActive = !isUnderlinePresetActive;
     const btn = document.getElementById('btn-underline-toggle');
@@ -943,7 +902,7 @@
 
   function addTextItem() {
     const input = document.getElementById('text-input');
-    const text = input.value.trim() || "সুন্দর বাংলা ভাষা";
+    const text = input.value.trim() || "সুন্দর বাংলা ব্যাকরণ";
     const font = document.getElementById('font-family-select').value;
     const size = parseInt(document.getElementById('font-size-select').value, 10);
 
@@ -956,7 +915,7 @@
       fontSize: size,
       color: activeTextPresetColor,
       bgColor: activeTextBgColor,
-      underline: isUnderlinePresetActive, // আন্ডারলাইন স্ট্যাটাস
+      underline: isUnderlinePresetActive,
       x: 400,
       y: 200 + (items.length % 5) * 80,
       width: 'auto',
@@ -1034,7 +993,7 @@
       label = 'বর্গক্ষেত্র (Square)';
       svgContent = `
         <svg viewBox="0 0 240 240" style="width:100%; height:100%;">
-          <rect x="25" y="25" width="190" height="190" rx="12" fill="rgba(192, 132, 252, 0.2)" stroke="#c084fc" stroke-width="10"/>
+          <rect x="25" y="25" width="190" height="190" rx="14" fill="rgba(192, 132, 252, 0.22)" stroke="#c084fc" stroke-width="10"/>
           <text x="120" y="130" text-anchor="middle" font-size="28" font-weight="bold" fill="#facc15" font-family="'Hind Siliguri'">বর্গাকার (Square)</text>
         </svg>
       `;
@@ -1043,7 +1002,7 @@
       label = 'ত্রিভুজ (Triangle)';
       svgContent = `
         <svg viewBox="0 0 240 220" style="width:100%; height:100%;">
-          <polygon points="120,20 25,190 215,190" fill="rgba(236, 72, 153, 0.2)" stroke="#ec4899" stroke-width="10" stroke-linejoin="round"/>
+          <polygon points="120,20 25,190 215,190" fill="rgba(236, 72, 153, 0.22)" stroke="#ec4899" stroke-width="10" stroke-linejoin="round"/>
           <text x="120" y="150" text-anchor="middle" font-size="26" font-weight="bold" fill="#facc15" font-family="'Hind Siliguri'">ত্রিভুজ</text>
         </svg>
       `;
@@ -1063,7 +1022,7 @@
       label = 'বৃত্ত (Circle)';
       svgContent = `
         <svg viewBox="0 0 240 240" style="width:100%; height:100%;">
-          <circle cx="120" cy="120" r="95" fill="rgba(34, 211, 238, 0.2)" stroke="#22d3ee" stroke-width="10"/>
+          <circle cx="120" cy="120" r="95" fill="rgba(34, 211, 238, 0.22)" stroke="#22d3ee" stroke-width="10"/>
           <circle cx="120" cy="120" r="8" fill="#f43f5e"/>
           <line x1="120" y1="120" x2="215" y2="120" stroke="#facc15" stroke-width="5" stroke-dasharray="8,6"/>
           <text x="135" y="110" font-size="22" font-weight="bold" fill="#facc15" font-family="'Hind Siliguri'">ব্যাসার্ধ (r)</text>
@@ -1074,7 +1033,7 @@
       label = 'আয়তক্ষেত্র (Rectangle)';
       svgContent = `
         <svg viewBox="0 0 320 200" style="width:100%; height:100%;">
-          <rect x="20" y="20" width="280" height="160" rx="14" fill="rgba(147, 51, 234, 0.2)" stroke="#a855f7" stroke-width="10"/>
+          <rect x="20" y="20" width="280" height="160" rx="14" fill="rgba(147, 51, 234, 0.22)" stroke="#a855f7" stroke-width="10"/>
           <text x="160" y="115" text-anchor="middle" font-size="26" font-weight="bold" fill="#22d3ee" font-family="'Hind Siliguri'">আয়তাকার বক্স</text>
         </svg>
       `;
@@ -1345,7 +1304,7 @@
         type: 'flow_node',
         nodeType: 'subbranch',
         title: 'প্রধান ভাগসমূহ',
-        desc: '• মুখ্য কর্তা (ছেলেটি পড়ে)\n• প্রযোজক কর্তা (মা শিশুকে খাওয়াচ্ছেন)\n• ব্যতিহার কর্তা (বাঘে-মহিষে লড়াই)',
+        desc: '• মুখ্য কর্তা (ছেলেটি পড়ে)\\n• প্রযোজক কর্তা (মা শিশুকে খাওয়াচ্ছেন)\\n• ব্যতিহার কর্তা (বাঘে-মহিষে লড়াই)',
         width: 480,
         height: 'auto',
         scale: 1,
@@ -1373,7 +1332,7 @@
         type: 'flow_node',
         nodeType: 'subbranch',
         title: 'প্রধান ভাগসমূহ',
-        desc: '• মুখ্য কর্ম (বাবা আমাকে কলম দিলেন)\n• গৌণ কর্ম (আমাকে)\n• সমধাতুজ কর্ম (বেশ এক ঘুম ঘুমিয়েছি)',
+        desc: '• মুখ্য কর্ম (বাবা আমাকে কলম দিলেন)\\n• গৌণ কর্ম (আমাকে)\\n• সমধাতুজ কর্ম (বেশ এক ঘুম ঘুমিয়েছি)',
         width: 480,
         height: 'auto',
         scale: 1,
@@ -1470,9 +1429,6 @@
     selectItem(item.id);
   }
 
-  /* ========================================================
-     DOM RENDERING & UNIVERSAL PINCH RESIZE / DRAG
-     ======================================================== */
   function renderItemOnBoard(item) {
     const el = document.createElement('div');
     el.className = 'board-item';
@@ -1501,7 +1457,7 @@
       textDiv.style.fontSize = item.fontSize + 'px';
       textDiv.style.color = item.color;
       textDiv.style.backgroundColor = item.bgColor || 'transparent';
-      textDiv.style.textShadow = '0 0 10px rgba(0,0,0,0.8)';
+      textDiv.style.textShadow = '0 0 10px rgba(0,0,0,0.85)';
       if (item.underline) {
         textDiv.style.textDecoration = 'underline';
         textDiv.style.textDecorationColor = item.color;
@@ -1534,7 +1490,7 @@
         <div style="background:rgba(23, 10, 48, 0.95); border:4px solid #8b5cf6; border-radius:24px; padding:24px; box-shadow:0 0 35px rgba(139, 92, 246, 0.4);">
           <div style="color:#f43f5e; font-size:28px; font-weight:bold;">প্রশ্ন:</div>
           <div style="color:#f8fafc; font-size:38px; font-weight:bold; margin:8px 0 14px 0;">${item.question}</div>
-          <div style="background:rgba(6, 78, 59, 0.8); padding:14px; border-radius:12px; border-left:6px solid #10b981; color:#34d399; font-size:30px; font-weight:bold;">
+          <div style="background:rgba(6, 78, 59, 0.85); padding:14px; border-radius:12px; border-left:6px solid #10b981; color:#34d399; font-size:30px; font-weight:bold;">
             💡 উত্তর: ${item.answer}
           </div>
         </div>`;
@@ -1723,8 +1679,6 @@
       if (newAns !== null) item.answer = newAns;
       renderCurrentSlideToBoard();
       selectItem(item.id);
-    } else {
-      alert("এই উপাদানটি রিসাইজ বা রোটেট করতে পারেন।");
     }
   }
 
@@ -1764,9 +1718,7 @@
     if (el && board.firstChild) board.insertBefore(el, board.firstChild);
   }
 
-  /* ========================================================
-     AUDIO RECORD & PLAYBACK
-     ======================================================== */
+  /* Audio Recorder */
   let mediaRecorder = null;
   let audioChunks = [];
 
@@ -1864,7 +1816,7 @@
     const items = getCurrentSlideItems();
     items.forEach((item) => {
       const chip = document.createElement('div');
-      chip.style.cssText = `padding: 5px 10px; background: #190e38; border:1px solid #4c1d95; border-radius: 20px; font-size: 12px; white-space: nowrap; cursor: pointer; color:#c4b5fd;`;
+      chip.style.cssText = `padding: 5px 11px; background: #190c3d; border:1px solid #4c1d95; border-radius: 20px; font-size: 12px; white-space: nowrap; cursor: pointer; color:#c4b5fd;`;
       let label = item.type === 'text' ? item.content.slice(0, 10) + '...' : (item.label || item.title || item.type);
       chip.innerHTML = `<strong>#${item.step}</strong> ${label}`;
       chip.onclick = () => selectItem(item.id);
@@ -1872,22 +1824,19 @@
     });
   }
 
-  /* ========================================================
-     PRESENTATION ENGINE (SEAMLESS MULTI-SLIDE RUNNER)
-     ======================================================== */
+  /* Presentation Engine & Touch Gestures */
   function checkOrientationPresentation() {
     const isLandscape = window.innerWidth > window.innerHeight;
     if (isLandscape && !isPresenting) {
       startPresentation();
     } else if (!isLandscape && isPresenting && !document.body.classList.contains('presenting-override')) {
-      stopPresentation();
+      stopPresentation(false);
     }
   }
 
   function togglePortraitPresentation() {
     if (isPresenting) {
-      document.body.classList.remove('presenting-override');
-      stopPresentation();
+      stopPresentation(true);
     } else {
       document.body.classList.add('presenting-override');
       startPresentation();
@@ -1907,12 +1856,18 @@
     presStepIndex = 0;
     selectItem(null);
 
+    history.pushState({ inPresentation: true }, "");
     loadSlideForPresentation(presSlideIndex, false);
   }
 
+  window.addEventListener('popstate', (e) => {
+    if (isPresenting) {
+      stopPresentation(false);
+    }
+  });
+
   function loadSlideForPresentation(sIndex, useFade = true) {
     if (sIndex >= slides.length) {
-      hudStatus.innerText = '🎉 সম্পূর্ণ প্রেজেন্টেশন সমাপ্ত!';
       return;
     }
 
@@ -1931,7 +1886,6 @@
         }
       });
 
-      hudStatus.innerText = 'চলছে (থামাতে টাচ করুন)';
       pauseSymbol.style.display = 'none';
       board.style.opacity = '1';
 
@@ -1943,7 +1897,7 @@
       board.style.opacity = '0';
       setTimeout(() => {
         setupNewSlide();
-      }, 450);
+      }, 400);
     } else {
       board.style.opacity = '1';
       setupNewSlide();
@@ -1982,40 +1936,52 @@
         presentationTimer = setTimeout(() => {
           loadSlideForPresentation(presSlideIndex + 1, true);
         }, 1200);
-      } else {
-        hudStatus.innerText = '🎉 সম্পূর্ণ প্রেজেন্টেশন সমাপ্ত!';
       }
     }
   }
 
-  function handlePresentationTap() {
+  /* Touch Gestures: Single Tap = Pause, Double Tap = Exit */
+  let lastTapTime = 0;
+  const tapArea = document.getElementById('presentation-tap-area');
+
+  tapArea.addEventListener('click', (e) => {
     if (!isPresenting) return;
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTapTime;
 
-    isPaused = !isPaused;
-    if (isPaused) {
-      clearTimeout(presentationTimer);
-      hudStatus.innerText = '⏸️ থেমে আছে (চালু করতে টাচ করুন)';
-      pauseSymbol.style.display = 'flex';
+    if (tapLength < 350 && tapLength > 0) {
+      stopPresentation(true);
+      e.preventDefault();
     } else {
-      hudStatus.innerText = 'চলছে (থামাতে টাচ করুন)';
-      pauseSymbol.style.display = 'none';
-      playNextStep();
+      isPaused = !isPaused;
+      if (isPaused) {
+        clearTimeout(presentationTimer);
+        pauseSymbol.style.display = 'flex';
+      } else {
+        pauseSymbol.style.display = 'none';
+        playNextStep();
+      }
     }
-  }
+    lastTapTime = currentTime;
+  });
 
-  function stopPresentation() {
+  function stopPresentation(shouldPopHistory = true) {
     isPresenting = false;
     isPaused = false;
     clearTimeout(presentationTimer);
     pauseSymbol.style.display = 'none';
     board.style.opacity = '1';
 
+    document.body.classList.remove('presenting-override');
+
+    if (shouldPopHistory && history.state && history.state.inPresentation) {
+      history.back();
+    }
+
     switchSlide(currentSlideIndex);
   }
 
-  /* ========================================================
-     STORAGE & INITIALIZATION
-     ======================================================== */
+  /* Persistence */
   function saveToStorage() {
     localStorage.setItem('school_neon_multislide_data', JSON.stringify(slides));
     alert("আপনার সকল স্লাইড ও ডায়াগ্রাম ডিভাইসে সেভ হয়েছে!");
