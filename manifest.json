@@ -1,10 +1,10 @@
 {
-  "name": "Smart Presentation Board",
-  "short_name": "PresBoard",
+  "name": "Kids Presentation Studio Pro",
+  "short_name": "KidsStudio",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#070314",
-  "theme_color": "#8b5cf6",
+  "theme_color": "#12062b",
   "orientation": "any",
   "icons": [
     {
